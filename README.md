@@ -1,2 +1,0 @@
-# aqi-forecast
-Aqi Forecast
