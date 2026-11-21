@@ -20,9 +20,3 @@ Live site: [aqiforecast.online](https://www.google.com/search?q=https://aqiforec
 * [Tailwind CSS](https://tailwindcss.com/) (Play CDN)
 * [Chart.js](https://www.chartjs.org/)
 * [Open-Meteo APIs](https://open-meteo.com/en/docs) (keyless, free for non-commercial use)
-
-## Deployment on GitHub Pages
-
-1. Rename `gurgaon-aqi-forecast-dashboard.html` to `index.html` and upload it alongside this `README.md` to a public [GitHub](https://github.com/) repository.
-2. Open **Settings → Pages** in your repository, choose the `main` branch and `/ (root)` folder, and click **Save** ([GitHub Pages Quickstart](https://docs.github.com/en/pages/quickstart)).
-3. To connect a custom domain (`aqiforecast.online`), add it under **Settings → Pages → Custom domain**, point your DNS `A` records (`@`) to [GitHub Pages' official IP addresses](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site) (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`) and `www` `CNAME` to `<your-username>.github.io`, and enable **Enforce HTTPS**.
