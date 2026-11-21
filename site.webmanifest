@@ -1,0 +1,9 @@
+{
+  "name": "AQI Forecast — Live Air Quality & 72h Prediction",
+  "short_name": "AQI Forecast",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "description": "Live Indian NAQI & US AQI dashboard with GRAP stages, boundary layer dispersion, and 12h/72h forecasts."
+}
