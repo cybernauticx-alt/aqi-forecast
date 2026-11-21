@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gurgaon AQI — Daily, Weekly &amp; 12-Hour Forecast Dashboard</title>
+  <meta name="description" content="Live AQI Forecast dashboard for Gurgaon, Delhi NCR, and Indian cities. View real-time US AQI, PM2.5, PM10, 12-hour predictive air quality modeling, daily and weekly trends, and outdoor health guidance." />
+  <meta name="keywords" content="Gurgaon AQI, Gurugram Air Quality Index, live AQI forecast, 12-hour AQI prediction, Delhi NCR air pollution, PM2.5, PM10, Noida AQI, New Delhi AQI, air quality trends" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <link rel="canonical" href="https://aqiforecast.online/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="AQI Forecast — Live Air Quality Trends &amp; 12-Hour Prediction" />
+  <meta property="og:description" content="Track live AQI, PM2.5, PM10, weather impacts, and 12-hour air quality forecasts for Gurgaon, Delhi NCR, and custom cities." />
+  <meta property="og:url" content="https://aqiforecast.online/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="AQI Forecast — Live Air Quality Trends &amp; 12-Hour Prediction" />
+  <meta name="twitter:description" content="Real-time AQI dashboard with 12-hour predictive modeling, daily/weekly trends, and outdoor guidance." />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "AQI Forecast",
+    "url": "https://aqiforecast.online/",
+    "applicationCategory": "WeatherApplication",
+    "operatingSystem": "Web",
+    "description": "Live Air Quality Index (AQI) dashboard with 12-hour multi-factor AQI prediction, daily and weekly trends, and pollutant analytics for Gurgaon, Delhi NCR, and global cities."
+  }
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#020617" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='%23f43f5e' font-family='sans-serif' font-weight='bold' font-size='22'%3EAQI%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='%23f43f5e' font-family='sans-serif' font-weight='bold' font-size='22'%3EAQI%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'] },
+        },
+      },
+    };
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen overflow-x-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+  <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+    <!-- Header -->
+    <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
+      <div class="flex items-center gap-3">
+        <div class="px-2.5 h-10 rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-sky-950 dark:from-slate-800 dark:to-sky-950 border border-sky-500/30 flex items-center gap-2 text-white shadow-sm shrink-0">
+          <svg class="w-5 h-5 text-sky-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 15c2.5-3 5.5-3 8 0s5.5 3 8 0" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9c2.5-3 5.5-3 8 0s5.5 3 8 0" />
+          </svg>
+          <div class="leading-none">
+            <span class="block text-xs font-extrabold tracking-tight">AQI</span>
+            <span class="block text-[9px] font-semibold uppercase tracking-widest text-sky-300">Forecast</span>
+          </div>
+        </div>
+        <div>
+          <h1 id="page-title" class="text-lg sm:text-xl font-bold tracking-tight">Gurgaon AQI Trends &amp; 12h Forecast</h1>
+          <p id="header-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Loading live air quality data...</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 w-full sm:w-auto">
+        <div class="flex items-center gap-2">
+          <label class="sr-only" for="location-select">Select location</label>
+          <select id="location-select" class="flex-1 sm:flex-none px-3 py-2 sm:py-1.5 text-xs font-semibold rounded-xl bg-white dark:bg-slate-900 border border-sky-500/40 dark:border-sky-500/40 focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="gurgaon" selected>📍 Gurgaon</option>
+            <option value="delhi">📍 New Delhi</option>
+            <option value="noida">📍 Noida</option>
+            <option value="faridabad">📍 Faridabad</option>
+            <option value="ghaziabad">📍 Ghaziabad</option>
+            <option value="chandigarh">📍 Chandigarh</option>
+            <option value="jaipur">📍 Jaipur</option>
+            <option value="mumbai">📍 Mumbai</option>
+            <option value="bengaluru">📍 Bengaluru</option>
+            <option value="custom">🔍 Custom City...</option>
+          </select>
+          <button id="btn-theme" type="button" title="Toggle theme" class="p-2 sm:p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 sm:order-last" aria-label="Toggle theme">
+            <svg class="w-4 h-4 hidden dark:block text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg class="w-4 h-4 block dark:hidden text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+        </div>
+        <div class="grid grid-cols-3 sm:flex items-center gap-2">
+          <label class="sr-only" for="auto-refresh-select">Auto refresh</label>
+          <select id="auto-refresh-select" class="px-2.5 py-2 sm:py-1.5 text-xs font-medium rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500">
+            <option value="0">Auto: Off</option>
+            <option value="10" selected>Auto: 10m</option>
+            <option value="15">Auto: 15m</option>
+            <option value="30">Auto: 30m</option>
+            <option value="60">Auto: 60m</option>
+          </select>
+          <button id="btn-refresh-csv" type="button" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors disabled:opacity-60">
+            <span>Refresh Data</span>
+          </button>
+          <button id="btn-copy-whatsapp" type="button" class="px-3 py-2 sm:py-1.5 text-xs font-semibold rounded-xl bg-sky-600 hover:bg-sky-500 text-white shadow-sm transition-colors text-center">
+            Share Summary
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+    <!-- KPI Strip -->
+    <section id="kpi-strip" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 mb-5 sm:mb-6"></section>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <div class="grid grid-cols-2 sm:inline-flex rounded-xl bg-slate-200/80 dark:bg-slate-800/90 p-1 gap-1 w-full sm:w-auto" role="tablist">
+        <button id="tab-forecast" type="button" role="tab" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all">12-Hour Forecast</button>
+        <button id="tab-daily" type="button" role="tab" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all">Daily Trends</button>
+        <button id="tab-weekly" type="button" role="tab" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all">Weekly Trends (Sun–Sat)</button>
+        <button id="tab-analytics" type="button" role="tab" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all">Deep Analytics</button>
+        <button id="tab-log" type="button" role="tab" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all">Hourly Log</button>
+      </div>
+    </nav>
+
+    <!-- 12-HOUR FORECAST VIEW -->
+    <section id="view-forecast" class="space-y-5">
+      <!-- Best Outdoor Window + Purifier/Mask/Ventilation Action Guide -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div id="best-window-card" class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm flex flex-wrap items-center justify-between gap-3"></div>
+        <div id="action-guide-card" class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm"></div>
+      </div>
+
+      <!-- Custom AQI Alert Bar -->
+      <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 px-4 py-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">AQI Alerts:</span>
+          <label class="inline-flex items-center gap-1">
+            <span>High &ge;</span>
+            <input id="alert-high-input" type="number" min="50" max="500" step="10" value="350" class="w-16 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold" />
+          </label>
+          <label class="inline-flex items-center gap-1">
+            <span>Clean &le;</span>
+            <input id="alert-low-input" type="number" min="20" max="300" step="10" value="150" class="w-16 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold" />
+          </label>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="alert-status-text" class="text-[11px] text-slate-500 dark:text-slate-400">In-page alerts active</span>
+          <button id="btn-enable-notif" type="button" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+            Enable Browser Alerts
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Model Summary & Weather Correlations -->
+        <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-4">
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Multi-Factor Model</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Predicts the next 12 hours using temperature, wind speed &amp; direction, humidity, rain, traffic congestion, CO, NO₂, and diurnal hour-of-day patterns learned from logged readings.</p>
+            <p id="weather-source-badge" class="text-[11px] font-semibold text-sky-600 dark:text-sky-400 mt-1.5">Weather input: Checking Open-Meteo...</p>
+          </div>
+          <div id="driver-correlations" class="space-y-2"></div>
+
+          <!-- Interactive What-If Weather Sliders -->
+          <div class="pt-3 border-t border-slate-200/80 dark:border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">What-If Weather</span>
+              <button id="btn-reset-whatif" type="button" class="text-[11px] font-semibold text-sky-600 dark:text-sky-400 hover:underline">Reset</button>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span>Wind Speed Offset</span>
+                <span id="wind-offset-val" class="font-bold">0.0 km/h</span>
+              </div>
+              <input id="slider-wind" type="range" min="-3" max="12" step="0.5" value="0" class="w-full accent-sky-500" />
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span>Temperature Offset</span>
+                <span id="temp-offset-val" class="font-bold">0 °C</span>
+              </div>
+              <input id="slider-temp" type="range" min="-5" max="8" step="0.5" value="0" class="w-full accent-amber-500" />
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span>Simulated Rain</span>
+                <span id="rain-offset-val" class="font-bold">0.0 mm/h</span>
+              </div>
+              <input id="slider-rain" type="range" min="0" max="15" step="0.5" value="0" class="w-full accent-indigo-500" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 12-Hour Forecast Chart -->
+        <div class="lg:col-span-2 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 class="text-sm font-bold">Last 12h Actual vs. Next 12h Predicted AQI</h3>
+                <p id="forecast-chart-subtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
+              </div>
+            </div>
+            <div class="relative h-64 sm:h-80">
+              <canvas id="forecast-chart"></canvas>
+            </div>
+          </div>
+          <div id="forecast-quick-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-4 pt-4 border-t border-slate-200/70 dark:border-slate-800"></div>
+        </div>
+      </div>
+
+      <!-- 12-Hour Forecast Table -->
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200/70 dark:border-slate-800 flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hour-by-Hour 12h Outlook</h3>
+          <div class="flex items-center gap-2"><span class="sm:hidden text-[10px] text-slate-400">Swipe &rarr;</span><span id="forecast-range-badge" class="text-xs font-medium text-slate-500 dark:text-slate-400"></span></div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs whitespace-nowrap">
+            <thead class="bg-slate-100/90 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Target Hour (IST)</th>
+                <th class="px-4 py-3 font-semibold">Est. AQI</th>
+                <th class="px-4 py-3 font-semibold">Range</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+                <th class="px-4 py-3 font-semibold">Est. Temp</th>
+                <th class="px-4 py-3 font-semibold">Est. Humidity</th>
+                <th class="px-4 py-3 font-semibold">Est. Wind</th>
+                <th class="px-4 py-3 font-semibold">Est. Rain</th>
+                <th class="px-4 py-3 font-semibold">Activity Guidance</th>
+              </tr>
+            </thead>
+            <tbody id="forecast-table-body" class="divide-y divide-slate-200/70 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAILY TRENDS VIEW -->
+    <section id="view-daily" class="hidden space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Daily Breakdown &amp; Hourly Progression</h2>
+        <div class="flex items-center gap-2">
+          <label for="daily-date-select" class="text-xs font-medium text-slate-500 dark:text-slate-400">Filter Day:</label>
+          <select id="daily-date-select" class="px-2.5 py-1.5 text-xs font-medium rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></select>
+        </div>
+      </div>
+
+      <div id="daily-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+        <div class="mb-4">
+          <h3 class="text-sm font-bold">Hourly AQI &amp; PM2.5 Progression</h3>
+          <p id="daily-chart-subtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
+        </div>
+        <div class="relative h-60 sm:h-72">
+          <canvas id="daily-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+        <div class="mb-4">
+          <h3 class="text-sm font-bold">24-Hour Time-of-Day Pattern (Cleanest vs. Peak Hours)</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Average US AQI by hour of day across all logged readings (IST)</p>
+        </div>
+        <div class="relative h-60 sm:h-72">
+          <canvas id="hourly-pattern-chart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- WEEKLY TRENDS VIEW -->
+    <section id="view-weekly" class="hidden space-y-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Weekly Trend (Sunday – Saturday)</h2>
+        <div class="flex items-center gap-2">
+          <label for="week-select" class="text-xs font-medium text-slate-500 dark:text-slate-400">Week:</label>
+          <select id="week-select" class="px-2.5 py-1.5 text-xs font-medium rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"></select>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+        <div class="mb-4">
+          <h3 class="text-sm font-bold">Daily Average, Min &amp; Max AQI (Sun–Sat)</h3>
+          <p id="weekly-chart-subtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
+        </div>
+        <div class="relative h-60 sm:h-72">
+          <canvas id="weekly-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100/90 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Day</th>
+                <th class="px-4 py-3 font-semibold">Date</th>
+                <th class="px-4 py-3 font-semibold">Readings</th>
+                <th class="px-4 py-3 font-semibold">Avg AQI</th>
+                <th class="px-4 py-3 font-semibold">Min AQI</th>
+                <th class="px-4 py-3 font-semibold">Max AQI</th>
+                <th class="px-4 py-3 font-semibold">Avg PM2.5</th>
+                <th class="px-4 py-3 font-semibold">Avg PM10</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody id="weekly-table-body" class="divide-y divide-slate-200/70 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEEP ANALYTICS VIEW -->
+    <section id="view-analytics" class="hidden space-y-5">
+      <!-- Model Fit & Combustion/Dust KPIs -->
+      <div id="analytics-kpis" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+
+      <!-- PM2.5 / PM10 Ratio Chart + Spike Detector -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+          <div class="mb-4">
+            <h3 class="text-sm font-bold">Combustion vs. Dust Ratio (PM2.5 / PM10)</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">&ge; 0.65 indicates smoke/exhaust dominance; &lt; 0.50 indicates coarse dust</p>
+          </div>
+          <div class="relative h-60 sm:h-72">
+            <canvas id="ratio-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm flex flex-col">
+          <div class="mb-3">
+            <h3 class="text-sm font-bold">Hourly Spike &amp; Anomaly Detector</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Flags abrupt hourly AQI jumps (|&Delta;| &ge; 25 or |z| &ge; 1.3)</p>
+          </div>
+          <div id="anomaly-list" class="space-y-2 overflow-y-auto max-h-72 pr-1"></div>
+        </div>
+      </div>
+
+      <!-- Full Correlation Matrix -->
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200/70 dark:border-slate-800 flex items-center justify-between">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Multi-Factor Correlation Matrix (Pearson r)</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Live linear relationships across all logged readings (+1.0 = move together, -1.0 = inverse)</p>
+          </div>
+          <span class="sm:hidden text-[10px] text-slate-400">Swipe &rarr;</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-center text-[11px] whitespace-nowrap">
+            <thead id="corr-matrix-head" class="bg-slate-100/90 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300"></thead>
+            <tbody id="corr-matrix-body" class="divide-y divide-slate-200/70 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FULL HOURLY LOG VIEW -->
+    <section id="view-log" class="hidden space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Logged Readings</h2>
+        <div class="flex flex-wrap items-center gap-2">
+          <select id="log-date-filter" class="px-2.5 py-1.5 text-xs font-medium rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <option value="ALL">All Dates</option>
+          </select>
+          <select id="log-status-filter" class="px-2.5 py-1.5 text-xs font-medium rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+            <option value="ALL">All Statuses</option>
+            <option value="Hazardous">Hazardous</option>
+            <option value="Severe">Severe</option>
+            <option value="Unhealthy">Unhealthy</option>
+            <option value="Sensitive">Sensitive</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Good">Good</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs whitespace-nowrap">
+            <thead class="bg-slate-100/90 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+              <tr>
+                <th class="px-3.5 py-3 font-semibold">Timestamp (IST)</th>
+                <th class="px-3.5 py-3 font-semibold">AQI</th>
+                <th class="px-3.5 py-3 font-semibold">Status</th>
+                <th class="px-3.5 py-3 font-semibold">PM2.5</th>
+                <th class="px-3.5 py-3 font-semibold">PM10</th>
+                <th class="px-3.5 py-3 font-semibold">CO</th>
+                <th class="px-3.5 py-3 font-semibold">NO₂</th>
+                <th class="px-3.5 py-3 font-semibold">SO₂</th>
+                <th class="px-3.5 py-3 font-semibold">O₃</th>
+                <th class="px-3.5 py-3 font-semibold">Temp</th>
+                <th class="px-3.5 py-3 font-semibold">Humidity</th>
+                <th class="px-3.5 py-3 font-semibold">Wind</th>
+                <th class="px-3.5 py-3 font-semibold">UV</th>
+              </tr>
+            </thead>
+            <tbody id="log-table-body" class="divide-y divide-slate-200/70 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    </main>
+    <footer class="mt-8 pt-4 border-t border-slate-200/70 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-between gap-2">
+      <span>AQI Forecast &middot; Live Air Quality &amp; 12-Hour Predictive Dashboard</span>
+      <span>Data powered by Open-Meteo Air Quality &amp; Weather</span>
+    </footer>
+  </div>
+
+  <!-- Custom City Search Modal -->
+  <div id="city-modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-2xl space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold">Choose Any City</h3>
+        <button id="btn-close-city-modal" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-base font-bold">&times;</button>
+      </div>
+      <div class="flex gap-2">
+        <input id="city-search-input" type="text" placeholder="Enter city name (e.g., Pune, London, Tokyo)" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+        <button id="btn-city-search" type="button" class="px-3.5 py-2 text-xs font-semibold rounded-xl bg-sky-600 hover:bg-sky-500 text-white">Search</button>
+      </div>
+      <div id="city-search-results" class="space-y-1.5 max-h-52 overflow-y-auto text-xs"></div>
+    </div>
+  </div>
+
+  <!-- In-Page Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold shadow-lg"></div>
+
+  <script>
+    (function () {
+      const LOCATIONS = {
+        gurgaon: { name: 'Gurgaon', lat: 28.4595, lon: 77.0266, tz: 'Asia/Kolkata' },
+        delhi: { name: 'New Delhi', lat: 28.6139, lon: 77.2090, tz: 'Asia/Kolkata', useSheet: false },
+        noida: { name: 'Noida', lat: 28.5355, lon: 77.3910, tz: 'Asia/Kolkata', useSheet: false },
+        faridabad: { name: 'Faridabad', lat: 28.4089, lon: 77.3178, tz: 'Asia/Kolkata', useSheet: false },
+        ghaziabad: { name: 'Ghaziabad', lat: 28.6692, lon: 77.4538, tz: 'Asia/Kolkata', useSheet: false },
+        chandigarh: { name: 'Chandigarh', lat: 30.7333, lon: 76.7794, tz: 'Asia/Kolkata', useSheet: false },
+        jaipur: { name: 'Jaipur', lat: 26.9124, lon: 75.7873, tz: 'Asia/Kolkata', useSheet: false },
+        mumbai: { name: 'Mumbai', lat: 19.0760, lon: 72.8777, tz: 'Asia/Kolkata', useSheet: false },
+        bengaluru: { name: 'Bengaluru', lat: 12.9716, lon: 77.5946, tz: 'Asia/Kolkata', useSheet: false },
+      };
+
+      const FALLBACK_LOGS = [
+        { date: '2026-11-19', timestamp: '2026-11-19 21:41:03', aqi: 304, status: 'Hazardous', pm25: 213, pm10: 296, co: 2336, no2: 33, so2: 3, o3: 3, temp: 19, humidity: 52, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-19', timestamp: '2026-11-19 22:21:01', aqi: 318, status: 'Hazardous', pm25: 224, pm10: 310, co: 2502, no2: 31, so2: 3, o3: 2, temp: 17, humidity: 56, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-19', timestamp: '2026-11-19 23:51:01', aqi: 356, status: 'Hazardous', pm25: 249, pm10: 346, co: 2155, no2: 35, so2: 3, o3: 2, temp: 18, humidity: 58, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 00:41:01', aqi: 366, status: 'Hazardous', pm25: 256, pm10: 355, co: 2259, no2: 33, so2: 3, o3: 1, temp: 16, humidity: 63, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 01:21:02', aqi: 386, status: 'Hazardous', pm25: 267, pm10: 371, co: 2219, no2: 28, so2: 3, o3: 1, temp: 17, humidity: 57, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 02:21:02', aqi: 399, status: 'Hazardous', pm25: 274, pm10: 381, co: 2009, no2: 24, so2: 3, o3: 2, temp: 16, humidity: 57, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 03:31:00', aqi: 409, status: 'Hazardous', pm25: 279, pm10: 388, co: 1796, no2: 22, so2: 3, o3: 1, temp: 15, humidity: 64, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 04:01:00', aqi: 419, status: 'Hazardous', pm25: 285, pm10: 395, co: 1796, no2: 22, so2: 3, o3: 1, temp: 16, humidity: 59, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 05:31:00', aqi: 436, status: 'Hazardous', pm25: 293, pm10: 408, co: 1559, no2: 23, so2: 3, o3: 1, temp: 15, humidity: 60, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 06:31:00', aqi: 425, status: 'Hazardous', pm25: 288, pm10: 399, co: 1472, no2: 22, so2: 2, o3: 1, temp: 16, humidity: 59, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 07:11:01', aqi: 418, status: 'Hazardous', pm25: 284, pm10: 394, co: 1472, no2: 22, so2: 2, o3: 1, temp: 16, humidity: 61, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 08:21:01', aqi: 417, status: 'Hazardous', pm25: 283, pm10: 392, co: 1480, no2: 23, so2: 2, o3: 1, temp: 18, humidity: 54, wind: 3.6, uv: 0.6 },
+        { date: '2026-11-20', timestamp: '2026-11-20 08:51:01', aqi: 405, status: 'Hazardous', pm25: 277, pm10: 384, co: 1480, no2: 23, so2: 2, o3: 1, temp: 18, humidity: 54, wind: 3.6, uv: 0.6 },
+        { date: '2026-11-20', timestamp: '2026-11-20 10:51:02', aqi: 356, status: 'Hazardous', pm25: 252, pm10: 350, co: 1884, no2: 36, so2: 3, o3: 3, temp: 22, humidity: 44, wind: 3.6, uv: 3.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 11:21:01', aqi: 307, status: 'Hazardous', pm25: 224, pm10: 311, co: 1853, no2: 46, so2: 3, o3: 4, temp: 24, humidity: 38, wind: 3.6, uv: 4.1 },
+        { date: '2026-11-20', timestamp: '2026-11-20 12:01:00', aqi: 264, status: 'Severe', pm25: 188, pm10: 261, co: 1853, no2: 46, so2: 3, o3: 4, temp: 25, humidity: 33, wind: 3.6, uv: 4.7 },
+        { date: '2026-11-20', timestamp: '2026-11-20 13:21:02', aqi: 191, status: 'Unhealthy', pm25: 111, pm10: 155, co: 514, no2: 19, so2: 4, o3: 21, temp: 26, humidity: 31, wind: 3.6, uv: 4.1 },
+        { date: '2026-11-20', timestamp: '2026-11-20 13:51:01', aqi: 189, status: 'Unhealthy', pm25: 108, pm10: 150, co: 514, no2: 19, so2: 4, o3: 21, temp: 25, humidity: 35, wind: 3.6, uv: 3.9 },
+        { date: '2026-11-20', timestamp: '2026-11-20 15:01:00', aqi: 185, status: 'Unhealthy', pm25: 103, pm10: 144, co: 532, no2: 16, so2: 4, o3: 23, temp: 25, humidity: 40, wind: 4.3, uv: 1.3 },
+        { date: '2026-11-20', timestamp: '2026-11-20 16:11:02', aqi: 181, status: 'Unhealthy', pm25: 98, pm10: 137, co: 584, no2: 17, so2: 4, o3: 27, temp: 23, humidity: 44, wind: 4.0, uv: 0.4 },
+        { date: '2026-11-20', timestamp: '2026-11-20 17:21:02', aqi: 187, status: 'Unhealthy', pm25: 106, pm10: 148, co: 721, no2: 21, so2: 4, o3: 28, temp: 22, humidity: 43, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 17:31:00', aqi: 187, status: 'Unhealthy', pm25: 106, pm10: 148, co: 721, no2: 21, so2: 4, o3: 28, temp: 22, humidity: 49, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 18:01:00', aqi: 193, status: 'Unhealthy', pm25: 115, pm10: 160, co: 721, no2: 21, so2: 4, o3: 28, temp: 21, humidity: 47, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 19:01:00', aqi: 208, status: 'Severe', pm25: 132, pm10: 183, co: 953, no2: 27, so2: 3, o3: 18, temp: 21, humidity: 52, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 19:51:01', aqi: 233, status: 'Severe', pm25: 157, pm10: 217, co: 1882, no2: 44, so2: 3, o3: 5, temp: 21, humidity: 53, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 21:31:00', aqi: 296, status: 'Severe', pm25: 209, pm10: 290, co: 2461, no2: 37, so2: 4, o3: 3, temp: 18, humidity: 56, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 21:41:01', aqi: 327, status: 'Hazardous', pm25: 228, pm10: 317, co: 2461, no2: 37, so2: 4, o3: 3, temp: 18, humidity: 56, wind: 3.6, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 22:01:00', aqi: 327, status: 'Hazardous', pm25: 228, pm10: 317, co: 2461, no2: 37, so2: 4, o3: 3, temp: 19, humidity: 56, wind: 5.0, uv: 0.0 },
+        { date: '2026-11-20', timestamp: '2026-11-20 23:01:00', aqi: 347, status: 'Hazardous', pm25: 241, pm10: 334, co: 2570, no2: 39, so2: 3, o3: 2, temp: 18, humidity: 57, wind: 5.4, uv: 0.0 },
+        { date: '2026-11-21', timestamp: '2026-11-21 00:31:00', aqi: 358, status: 'Hazardous', pm25: 248, pm10: 345, co: 2877, no2: 36, so2: 3, o3: 2, temp: 17, humidity: 59, wind: 5.4, uv: 0.0, traffic: '—' },
+        { date: '2026-11-21', timestamp: '2026-11-21 01:31:00', aqi: 345, status: 'Hazardous', pm25: 243, pm10: 337, co: 2632, no2: 29, so2: 3, o3: 2, temp: 17, humidity: 59, wind: 6.1, uv: 0.0, traffic: '—' },
+        { date: '2026-11-21', timestamp: '2026-11-21 01:41:01', aqi: 349, status: 'Hazardous', pm25: 246, pm10: 341, co: 2632, no2: 29, so2: 3, o3: 2, temp: 17, humidity: 59, wind: 6.1, uv: 0.0, traffic: '—' },
+        { date: '2026-11-21', timestamp: '2026-11-21 01:51:01', aqi: 349, status: 'Hazardous', pm25: 246, pm10: 341, co: 2632, no2: 29, so2: 3, o3: 2, temp: 17, humidity: 59, wind: 6.1, uv: 0.0, traffic: '—' },
+        { date: '2026-11-21', timestamp: '2026-11-21 02:21:02', aqi: 353, status: 'Hazardous', pm25: 248, pm10: 344, co: 2371, no2: 29, so2: 3, o3: 1, temp: 17, humidity: 60, wind: 5.4, uv: 0.0, traffic: 'Low' },
+      ];
+
+      const state = {
+        tab: 'forecast',
+        locationKey: 'gurgaon',
+        logs: [...FALLBACK_LOGS],
+        sourceLabel: 'Built-in snapshot (syncing...)',
+        dailyFilter: 'ALL',
+        selectedWeekKey: '',
+        logDateFilter: 'ALL',
+        logStatusFilter: 'ALL',
+        windOffset: 0,
+        tempOffset: 0,
+        rainOffset: 0,
+        weatherForecast: null,
+        autoRefreshMinutes: 10,
+        autoRefreshTimer: null,
+        secondsUntilRefresh: 10 * 60,
+        lastSyncedStr: 'Not yet synced',
+        alertHigh: 350,
+        alertLow: 150,
+        forecastChart: null,
+        dailyChart: null,
+        hourlyPatternChart: null,
+        ratioChart: null,
+        weeklyChart: null,
+      };
+
+      const els = {
+        pageTitle: document.getElementById('page-title'),
+        locationSelect: document.getElementById('location-select'),
+        cityModal: document.getElementById('city-modal'),
+        btnCloseCityModal: document.getElementById('btn-close-city-modal'),
+        citySearchInput: document.getElementById('city-search-input'),
+        btnCitySearch: document.getElementById('btn-city-search'),
+        citySearchResults: document.getElementById('city-search-results'),
+        headerSubtitle: document.getElementById('header-subtitle'),
+        kpiStrip: document.getElementById('kpi-strip'),
+        tabForecast: document.getElementById('tab-forecast'),
+        tabDaily: document.getElementById('tab-daily'),
+        tabWeekly: document.getElementById('tab-weekly'),
+        tabAnalytics: document.getElementById('tab-analytics'),
+        tabLog: document.getElementById('tab-log'),
+        viewForecast: document.getElementById('view-forecast'),
+        viewDaily: document.getElementById('view-daily'),
+        viewWeekly: document.getElementById('view-weekly'),
+        viewAnalytics: document.getElementById('view-analytics'),
+        viewLog: document.getElementById('view-log'),
+        analyticsKpis: document.getElementById('analytics-kpis'),
+        ratioChartCanvas: document.getElementById('ratio-chart'),
+        anomalyList: document.getElementById('anomaly-list'),
+        corrMatrixHead: document.getElementById('corr-matrix-head'),
+        corrMatrixBody: document.getElementById('corr-matrix-body'),
+        driverCorrelations: document.getElementById('driver-correlations'),
+        sliderWind: document.getElementById('slider-wind'),
+        sliderTemp: document.getElementById('slider-temp'),
+        sliderRain: document.getElementById('slider-rain'),
+        windOffsetVal: document.getElementById('wind-offset-val'),
+        tempOffsetVal: document.getElementById('temp-offset-val'),
+        rainOffsetVal: document.getElementById('rain-offset-val'),
+        btnResetWhatif: document.getElementById('btn-reset-whatif'),
+        forecastChartSubtitle: document.getElementById('forecast-chart-subtitle'),
+        forecastQuickStats: document.getElementById('forecast-quick-stats'),
+        forecastChartCanvas: document.getElementById('forecast-chart'),
+        forecastRangeBadge: document.getElementById('forecast-range-badge'),
+        forecastTableBody: document.getElementById('forecast-table-body'),
+        dailyDateSelect: document.getElementById('daily-date-select'),
+        dailyCards: document.getElementById('daily-cards'),
+        dailyChartSubtitle: document.getElementById('daily-chart-subtitle'),
+        dailyChartCanvas: document.getElementById('daily-chart'),
+        weekSelect: document.getElementById('week-select'),
+        weeklyChartSubtitle: document.getElementById('weekly-chart-subtitle'),
+        weeklyChartCanvas: document.getElementById('weekly-chart'),
+        weeklyTableBody: document.getElementById('weekly-table-body'),
+        logDateFilter: document.getElementById('log-date-filter'),
+        logStatusFilter: document.getElementById('log-status-filter'),
+        logTableBody: document.getElementById('log-table-body'),
+        autoRefreshSelect: document.getElementById('auto-refresh-select'),
+        btnRefreshCsv: document.getElementById('btn-refresh-csv'),
+        btnCopyWhatsapp: document.getElementById('btn-copy-whatsapp'),
+        bestWindowCard: document.getElementById('best-window-card'),
+        actionGuideCard: document.getElementById('action-guide-card'),
+        alertHighInput: document.getElementById('alert-high-input'),
+        alertLowInput: document.getElementById('alert-low-input'),
+        alertStatusText: document.getElementById('alert-status-text'),
+        btnEnableNotif: document.getElementById('btn-enable-notif'),
+        weatherSourceBadge: document.getElementById('weather-source-badge'),
+        hourlyPatternCanvas: document.getElementById('hourly-pattern-chart'),
+        btnTheme: document.getElementById('btn-theme'),
+        toast: document.getElementById('toast'),
+      };
+
+      function showToast(msg) {
+        els.toast.textContent = msg;
+        els.toast.classList.remove('hidden');
+        setTimeout(() => els.toast.classList.add('hidden'), 2600);
+      }
+
+      function statusBadgeClass(status) {
+        const s = (status || '').toLowerCase();
+        if (s === 'hazardous') return 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300';
+        if (s === 'severe' || s === 'very unhealthy') return 'bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-300';
+        if (s === 'unhealthy') return 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300';
+        if (s === 'sensitive') return 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300';
+        if (s === 'moderate') return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300';
+        return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
+      }
+
+      function getStatusFromAqi(aqi) {
+        if (aqi <= 50) return 'Good';
+        if (aqi <= 100) return 'Moderate';
+        if (aqi <= 150) return 'Sensitive';
+        if (aqi <= 200) return 'Unhealthy';
+        if (aqi <= 300) return 'Severe';
+        return 'Hazardous';
+      }
+
+      function getOutdoorGuidance(aqi) {
+        if (aqi <= 50) return 'Good for outdoors & exercise';
+        if (aqi <= 100) return 'Acceptable outdoors; sensitive groups pace exertion';
+        if (aqi <= 150) return 'Limit prolonged outdoor exertion';
+        if (aqi <= 200) return 'Better to stay indoors; avoid outdoor exercise';
+        return 'Stay indoors; avoid all outdoor exercise';
+      }
+
+      function avg(nums) {
+        return nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
+      }
+
+      function pearson(xs, ys) {
+        if (xs.length < 3) return 0;
+        const mx = avg(xs), my = avg(ys);
+        let num = 0, dx2 = 0, dy2 = 0;
+        for (let i = 0; i < xs.length; i++) {
+          const dx = xs[i] - mx, dy = ys[i] - my;
+          num += dx * dy;
+          dx2 += dx * dx;
+          dy2 += dy * dy;
+        }
+        const den = Math.sqrt(dx2 * dy2);
+        return den > 0 ? num / den : 0;
+      }
+
+      function getTrafficScoreByHour(hour) {
+        if ((hour >= 8 && hour <= 11) || (hour >= 17 && hour <= 21)) return 3; // Heavy/Peak
+        if ((hour >= 12 && hour <= 16) || hour === 7 || hour === 22) return 2; // Moderate
+        return 1; // Low
+      }
+
+      function trafficLabelToScore(label, hour) {
+        const l = String(label || '').toLowerCase();
+        if (l.includes('peak') || l.includes('severe')) return 4;
+        if (l.includes('heavy') || l.includes('high')) return 3;
+        if (l.includes('mod')) return 2;
+        if (l.includes('low') || l.includes('light')) return 1;
+        return getTrafficScoreByHour(hour);
+      }
+
+      function scoreToTrafficLabel(score) {
+        if (score >= 4) return 'Peak';
+        if (score >= 3) return 'Heavy';
+        if (score >= 2) return 'Moderate';
+        return 'Low';
+      }
+
+      function degToCompass(deg) {
+        if (deg === null || deg === undefined || Number.isNaN(Number(deg))) return '';
+        const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+        return dirs[Math.round(((Number(deg) % 360) / 45)) % 8];
+      }
+
+      function getWindDirAdj(deg) {
+        if (deg === null || deg === undefined || Number.isNaN(Number(deg))) return 0;
+        const d = Number(deg) % 360;
+        // NW/WNW winds (270-345 deg) tend to bring upwind NCR/Indo-Gangetic smoke into Gurgaon
+        if (d >= 270 && d <= 345) return 8;
+        // E/SE winds (60-160 deg) often bring cleaner/moister flow from outside the NW corridor
+        if (d >= 60 && d <= 160) return -6;
+        return 0;
+      }
+
+      function getHourFromTimestamp(ts) {
+        const m = String(ts).match(/(\d{1,2}):(\d{2})/);
+        return m ? Number(m[1]) : 0;
+      }
+
+      // Solve small linear system (Gaussian elimination) for OLS regression
+      function solveLinearSystem(A, b) {
+        const n = b.length;
+        const M = A.map((row, i) => [...row, b[i]]);
+        for (let col = 0; col < n; col++) {
+          let pivot = col;
+          for (let r = col + 1; r < n; r++) {
+            if (Math.abs(M[r][col]) > Math.abs(M[pivot][col])) pivot = r;
+          }
+          [M[col], M[pivot]] = [M[pivot], M[col]];
+          const div = M[col][col];
+          if (Math.abs(div) < 1e-8) continue;
+          for (let j = col; j <= n; j++) M[col][j] /= div;
+          for (let r = 0; r < n; r++) {
+            if (r === col) continue;
+            const factor = M[r][col];
+            for (let j = col; j <= n; j++) M[r][j] -= factor * M[col][j];
+          }
+        }
+        return M.map((row) => row[n]);
+      }
+
+      function computeHistoricalTrend(logs) {
+        if (!logs || logs.length < 4) {
+          return { label: 'Steady', mom3h: 0, drift24h: 0, driftPerHour: 0 };
+        }
+        const latest = logs[logs.length - 1];
+        const prev3 = logs.slice(-4, -1);
+        const mom3h = Math.round(latest.aqi - avg(prev3.map((r) => r.aqi)));
+
+        const half = Math.max(2, Math.floor(logs.length / 2));
+        const recentWindow = logs.slice(-Math.min(12, half));
+        const earlierWindow = logs.slice(0, Math.min(12, half));
+        const drift24h = Math.round(avg(recentWindow.map((r) => r.aqi)) - avg(earlierWindow.map((r) => r.aqi)));
+
+        // Bounded per-hour drift for multi-hour projection
+        const rawHourlyDrift = (mom3h * 0.4 + drift24h * 0.15) / 6;
+        const driftPerHour = Math.max(-2.5, Math.min(2.5, rawHourlyDrift));
+
+        let label = 'Steady';
+        if (drift24h <= -15 || mom3h <= -15) label = 'Improving';
+        else if (drift24h >= 15 || mom3h >= 15) label = 'Worsening';
+
+        return { label, mom3h, drift24h, driftPerHour };
+      }
+
+      function build12HourForecast(logs) {
+        if (!logs || logs.length < 3) return { points: [], corrs: {}, trend: computeHistoricalTrend(logs) };
+        const trend = computeHistoricalTrend(logs);
+
+        // Features: [1, temp, humidity, wind, co/1000, no2/10, sin(2pi*h/24), cos(2pi*h/24)]
+        const X = logs.map((r) => {
+          const h = getHourFromTimestamp(r.timestamp);
+          const rad = (2 * Math.PI * h) / 24;
+          return [1, r.temp, r.humidity, r.wind, r.co / 1000, r.no2 / 10, Math.sin(rad), Math.cos(rad)];
+        });
+        const y = logs.map((r) => r.aqi);
+        const k = X[0].length;
+
+        // Ridge-regularized normal equations (X^T X + lambda*I) w = X^T y
+        const XtX = Array.from({ length: k }, () => Array(k).fill(0));
+        const Xty = Array(k).fill(0);
+        for (let i = 0; i < X.length; i++) {
+          for (let a = 0; a < k; a++) {
+            Xty[a] += X[i][a] * y[i];
+            for (let b = 0; b < k; b++) XtX[a][b] += X[i][a] * X[i][b];
+          }
+        }
+        for (let a = 1; a < k; a++) XtX[a][a] += 1.5;
+        const w = solveLinearSystem(XtX, Xty);
+
+        // Compute residual std dev for confidence interval
+        const predsInSample = X.map((row) => row.reduce((sum, v, idx) => sum + v * w[idx], 0));
+        const errors = predsInSample.map((p, i) => p - y[i]);
+        const rmse = Math.sqrt(avg(errors.map((e) => e * e))) || 15;
+        const mae = avg(errors.map((e) => Math.abs(e)));
+        const yMean = avg(y);
+        const ssTot = y.reduce((sum, v) => sum + (v - yMean) ** 2, 0);
+        const ssRes = errors.reduce((sum, e) => sum + e * e, 0);
+        const r2 = ssTot > 0 ? Math.max(0, 1 - ssRes / ssTot) : 0;
+
+        // Build hourly climatology from logged data for temp/humidity/wind/co/no2
+        const byHour = Array.from({ length: 24 }, () => []);
+        logs.forEach((r) => byHour[getHourFromTimestamp(r.timestamp)].push(r));
+
+        const latest = logs[logs.length - 1];
+        const latestHour = getHourFromTimestamp(latest.timestamp);
+        const latestDate = latest.date;
+
+        // Ensure the 12h forecast always starts at the next future IST hour
+        const nowIst = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        const nowIstDate = `${nowIst.getFullYear()}-${String(nowIst.getMonth() + 1).padStart(2, '0')}-${String(nowIst.getDate()).padStart(2, '0')}`;
+        const nowIstHour = nowIst.getHours();
+        let baseDate = latestDate;
+        let baseHour = latestHour;
+        if (nowIstDate > latestDate || (nowIstDate === latestDate && nowIstHour > latestHour)) {
+          baseDate = nowIstDate;
+          baseHour = nowIstHour;
+        }
+
+        // Anchor offset so step +1h blends smoothly from latest observed AQI
+        const latestModelPred = X[X.length - 1].reduce((sum, v, idx) => sum + v * w[idx], 0);
+        const anchorGap = latest.aqi - latestModelPred;
+
+        const points = [];
+        for (let step = 1; step <= 12; step++) {
+          const targetHour = (baseHour + step) % 24;
+          const dayShift = Math.floor((baseHour + step) / 24);
+          const targetDate = dayShift > 0 ? addDays(baseDate, dayShift) : baseDate;
+          const bucket = byHour[targetHour];
+
+          // Use Open-Meteo real 12h weather forecast when available, else fallback to historical hour bucket/diurnal curve
+          const rad = (2 * Math.PI * targetHour) / 24;
+          const targetIsoPrefix = `${targetDate}T${String(targetHour).padStart(2, '0')}:00`;
+          const wxMatch = state.weatherForecast && state.weatherForecast.get(targetIsoPrefix);
+          const baseTemp = wxMatch ? wxMatch.temp : (bucket.length ? avg(bucket.map((r) => r.temp)) : (avg(logs.map((r) => r.temp)) - 4 * Math.cos(rad - 0.5)));
+          const baseHum = wxMatch ? wxMatch.humidity : (bucket.length ? avg(bucket.map((r) => r.humidity)) : (avg(logs.map((r) => r.humidity)) + 10 * Math.cos(rad - 0.5)));
+          const baseWind = wxMatch ? wxMatch.wind : (bucket.length ? avg(bucket.map((r) => r.wind)) : avg(logs.map((r) => r.wind)));
+          const baseRainMm = wxMatch ? wxMatch.rainMm : 0;
+          const rainProb = wxMatch ? wxMatch.rainProb : 0;
+          const windDeg = wxMatch ? wxMatch.windDeg : null;
+          const windDir = degToCompass(windDeg);
+          const baseCo = bucket.length ? avg(bucket.map((r) => r.co)) : latest.co;
+          const baseNo2 = bucket.length ? avg(bucket.map((r) => r.no2)) : latest.no2;
+
+          const estTemp = Number((baseTemp + state.tempOffset).toFixed(1));
+          const estHum = Math.max(15, Math.min(98, Math.round(baseHum - state.tempOffset * 1.5)));
+          const estWind = Math.max(0.5, Number((baseWind + state.windOffset).toFixed(1)));
+          const estRainMm = Number(Math.max(0, baseRainMm + state.rainOffset).toFixed(1));
+
+          const feat = [1, estTemp, estHum, estWind, baseCo / 1000, baseNo2 / 10, Math.sin(rad), Math.cos(rad)];
+          const rawPred = feat.reduce((sum, v, idx) => sum + v * w[idx], 0);
+
+          // Decay anchor gap + apply wind dispersion and rain wet-deposition washout
+          const windDispersionAdj = -state.windOffset * 6.5;
+          const decayedAnchor = anchorGap * Math.exp(-step / 4.5);
+          const washoutFactor = 1 - Math.min(0.45, estRainMm * 0.08);
+          const trafficScore = getTrafficScoreByHour(targetHour);
+          const trafficAdj = (trafficScore - 1.5) * 4.5;
+          const windDirAdj = getWindDirAdj(windDeg);
+          const trendAdj = trend.driftPerHour * Math.min(step, 6);
+          const estAqi = Math.max(10, Math.min(500, Math.round((rawPred + decayedAnchor + windDispersionAdj + trafficAdj + windDirAdj + trendAdj) * washoutFactor)));
+          const margin = Math.round(Math.min(55, rmse * (0.65 + step * 0.08)));
+
+          points.push({
+            step,
+            label: `${String(targetHour).padStart(2, '0')}:00`,
+            fullLabel: `${targetDate.slice(5)} ${String(targetHour).padStart(2, '0')}:00`,
+            estAqi,
+            low: Math.max(10, estAqi - margin),
+            high: Math.min(500, estAqi + margin),
+            status: getStatusFromAqi(estAqi),
+            guidance: getOutdoorGuidance(estAqi),
+            estTemp,
+            estHum,
+            estWind,
+            windDir,
+            estRainMm,
+            rainProb,
+          });
+        }
+
+        const aqis = logs.map((r) => r.aqi);
+        const corrs = {
+          temp: pearson(logs.map((r) => r.temp), aqis),
+          humidity: pearson(logs.map((r) => r.humidity), aqis),
+          wind: pearson(logs.map((r) => r.wind), aqis),
+          co: pearson(logs.map((r) => r.co), aqis),
+          traffic: pearson(logs.map((r) => trafficLabelToScore(r.traffic, getHourFromTimestamp(r.timestamp))), aqis),
+        };
+
+        return { points, corrs, trend, metrics: { r2, mae: Math.round(mae), rmse: Math.round(rmse), n: logs.length } };
+      }
+
+      function getWeekStartSunday(dateStr) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(Date.UTC(y, m - 1, d));
+        dt.setUTCDate(dt.getUTCDate() - dt.getUTCDay());
+        return dt.toISOString().slice(0, 10);
+      }
+
+      function addDays(dateStr, days) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(Date.UTC(y, m - 1, d + days));
+        return dt.toISOString().slice(0, 10);
+      }
+
+      function dayName(dateStr) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(Date.UTC(y, m - 1, d));
+        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dt.getUTCDay()];
+      }
+
+      function groupByDate(logs) {
+        const map = new Map();
+        logs.forEach((r) => {
+          if (!map.has(r.date)) map.set(r.date, []);
+          map.get(r.date).push(r);
+        });
+        return map;
+      }
+
+      function getPrimaryDriver(r) {
+        const ratios = [
+          { name: 'PM2.5', ratio: (r.pm25 || 0) / 35.4, detail: `${r.pm25} µg/m³` },
+          { name: 'PM10', ratio: (r.pm10 || 0) / 154, detail: `${r.pm10} µg/m³` },
+          { name: 'NO₂', ratio: (r.no2 || 0) / 100, detail: `${r.no2} ppb` },
+          { name: 'CO', ratio: (r.co || 0) / 9400, detail: `${r.co} ppb` },
+          { name: 'O₃', ratio: (r.o3 || 0) / 70, detail: `${r.o3} ppb` },
+        ];
+        return ratios.reduce((best, cur) => (cur.ratio > best.ratio ? cur : best), ratios[0]);
+      }
+
+      function getStagnationRisk(r) {
+        if (r.wind <= 6.5 && r.temp <= 20) return 'High';
+        if (r.wind <= 9 || r.temp <= 22) return 'Moderate';
+        return 'Low';
+      }
+
+      function renderKPIs(forecast) {
+        const logs = state.logs;
+        if (!logs.length) return;
+        const latest = logs[logs.length - 1];
+        const prev = logs.length >= 2 ? logs[logs.length - 2] : null;
+        const hrDelta = prev ? latest.aqi - prev.aqi : null;
+        const hrDeltaTxt = hrDelta === null ? 'Latest reading' : `${hrDelta >= 0 ? '+' : ''}${hrDelta} vs prev hr`;
+
+        const byDate = groupByDate(logs);
+        const sortedDates = Array.from(byDate.keys()).sort();
+        let dodVal = '—';
+        let dodSub = 'Need 2+ days';
+        if (sortedDates.length >= 2) {
+          const dToday = sortedDates[sortedDates.length - 1];
+          const dPrev = sortedDates[sortedDates.length - 2];
+          const avgToday = Math.round(avg(byDate.get(dToday).map((r) => r.aqi)));
+          const avgPrev = Math.round(avg(byDate.get(dPrev).map((r) => r.aqi)));
+          const diff = avgToday - avgPrev;
+          dodVal = `${diff >= 0 ? '+' : ''}${diff}`;
+          dodSub = `${dToday.slice(5)} (${avgToday}) vs ${dPrev.slice(5)} (${avgPrev})`;
+        }
+
+        const avgAqi = Math.round(avg(logs.map((r) => r.aqi)));
+        const minRec = logs.reduce((a, b) => (b.aqi < a.aqi ? b : a), logs[0]);
+        const maxRec = logs.reduce((a, b) => (b.aqi > a.aqi ? b : a), logs[0]);
+        const avgPm25 = Math.round(avg(logs.map((r) => r.pm25)));
+        const nextHr = forecast.points[0];
+        const driver = getPrimaryDriver(latest);
+        const stagRisk = getStagnationRisk(latest);
+
+        const h = getHourFromTimestamp(latest.timestamp);
+        const tLabel = (latest.traffic && latest.traffic !== '—') ? latest.traffic : scoreToTrafficLabel(getTrafficScoreByHour(h));
+        const tSub = 'Rush-hour pattern';
+
+        const peak12Pt = forecast.points.length
+          ? forecast.points.reduce((best, p) => (p.estAqi > best.estAqi ? p : best), forecast.points[0])
+          : null;
+
+        const cards = [
+          { label: 'Current AQI', val: latest.aqi, sub: `${latest.status} · ${hrDeltaTxt}`, highlight: 'border-rose-500/40 dark:border-rose-500/40' },
+          nextHr
+            ? { label: 'Next-Hr Est. AQI', val: nextHr.estAqi, sub: `${nextHr.status} · ${nextHr.low}–${nextHr.high}`, highlight: 'border-amber-500/40 dark:border-amber-500/40' }
+            : { label: 'Next-Hr Est. AQI', val: '—', sub: 'Need 3+ rows' },
+          peak12Pt
+            ? { label: '12h Peak Est.', val: peak12Pt.estAqi, sub: `${peak12Pt.status} around ${peak12Pt.label} IST` }
+            : { label: '12h Peak Est.', val: '—', sub: 'Need 3+ rows' },
+          { label: 'Primary Driver', val: driver.name, sub: `${driver.detail} (dominant)` },
+          { label: 'Stagnation Risk', val: stagRisk, sub: `${latest.wind} km/h${nextHr && nextHr.windDir ? ' ' + nextHr.windDir : ''} · ${latest.temp}°C` },
+          { label: 'Traffic Impact', val: tLabel, sub: tSub },
+          { label: 'Day-over-Day', val: dodVal, sub: dodSub },
+          (() => {
+            const tr = forecast.trend || { label: 'Steady', mom3h: 0, drift24h: 0 };
+            const mSign = tr.mom3h > 0 ? `+${tr.mom3h}` : `${tr.mom3h}`;
+            const dSign = tr.drift24h > 0 ? `+${tr.drift24h}` : `${tr.drift24h}`;
+            return { label: 'Historical Trend', val: tr.label, sub: `3h: ${mSign} · Period: ${dSign}` };
+          })(),
+          { label: 'Period Avg AQI', val: avgAqi, sub: `${logs.length} readings · ${byDate.size}d` },
+          { label: 'Avg PM2.5', val: `${avgPm25} µg/m³`, sub: getStatusFromAqi(avgAqi) },
+          { label: 'Cleanest Reading', val: minRec.aqi, sub: minRec.timestamp.slice(5, 16) },
+          { label: 'Peak Reading', val: maxRec.aqi, sub: maxRec.timestamp.slice(5, 16) },
+        ];
+
+        els.kpiStrip.innerHTML = cards
+          .map((c) => `
+            <div class="rounded-2xl bg-white dark:bg-slate-900 border ${c.highlight || 'border-slate-200/80 dark:border-slate-800'} p-3.5 shadow-sm flex flex-col justify-between">
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">${c.label}</p>
+              <p class="text-xl sm:text-2xl font-extrabold tracking-tight mt-1">${c.val}</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate" title="${c.sub}">${c.sub}</p>
+            </div>
+          `)
+          .join('');
+      }
+
+      function renderForecastView(forecast) {
+        const { points, corrs } = forecast;
+        // Render Purifier, Mask & Ventilation Action Guide
+        const latestAqi = state.logs.length ? state.logs[state.logs.length - 1].aqi : 300;
+        let purifier = 'Turbo / Max', purifierCls = 'text-rose-600 dark:text-rose-400';
+        let mask = 'N95 Required', maskCls = 'text-rose-600 dark:text-rose-400';
+        let vent = 'Keep Closed', ventCls = 'text-rose-600 dark:text-rose-400';
+        if (latestAqi <= 50) {
+          purifier = 'Off / Eco'; purifierCls = 'text-emerald-600 dark:text-emerald-400';
+          mask = 'Not Needed'; maskCls = 'text-emerald-600 dark:text-emerald-400';
+          vent = 'Open Windows'; ventCls = 'text-emerald-600 dark:text-emerald-400';
+        } else if (latestAqi <= 100) {
+          purifier = 'Low'; purifierCls = 'text-emerald-600 dark:text-emerald-400';
+          mask = 'Not Needed'; maskCls = 'text-emerald-600 dark:text-emerald-400';
+          vent = 'Open Windows'; ventCls = 'text-emerald-600 dark:text-emerald-400';
+        } else if (latestAqi <= 150) {
+          purifier = 'Medium'; purifierCls = 'text-amber-600 dark:text-amber-400';
+          mask = 'Optional (Sensitive)'; maskCls = 'text-amber-600 dark:text-amber-400';
+          vent = 'Brief Airing Only'; ventCls = 'text-amber-600 dark:text-amber-400';
+        } else if (latestAqi <= 250) {
+          purifier = 'High'; purifierCls = 'text-orange-600 dark:text-orange-400';
+          mask = 'N95 Advised'; maskCls = 'text-orange-600 dark:text-orange-400';
+          vent = 'Keep Closed'; ventCls = 'text-rose-600 dark:text-rose-400';
+        }
+        els.actionGuideCard.innerHTML = `
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2.5">Home &amp; Commute Action Guide (AQI ${latestAqi})</p>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+              <p class="text-[10px] text-slate-500 dark:text-slate-400">Air Purifier</p>
+              <p class="text-xs sm:text-sm font-bold mt-0.5 ${purifierCls}">${purifier}</p>
+            </div>
+            <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+              <p class="text-[10px] text-slate-500 dark:text-slate-400">Outdoor Mask</p>
+              <p class="text-xs sm:text-sm font-bold mt-0.5 ${maskCls}">${mask}</p>
+            </div>
+            <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+              <p class="text-[10px] text-slate-500 dark:text-slate-400">Windows</p>
+              <p class="text-xs sm:text-sm font-bold mt-0.5 ${ventCls}">${vent}</p>
+            </div>
+          </div>
+        `;
+
+        els.weatherSourceBadge.textContent = state.weatherForecast
+          ? 'Weather input: Live Open-Meteo 12h Forecast'
+          : 'Weather input: Historical diurnal estimate';
+
+        if (points.length >= 2) {
+          let bestIdx = 0;
+          let bestAvg = Infinity;
+          for (let i = 0; i < points.length - 1; i++) {
+            const pairAvg = (points[i].estAqi + points[i + 1].estAqi) / 2;
+            if (pairAvg < bestAvg) {
+              bestAvg = pairAvg;
+              bestIdx = i;
+            }
+          }
+          const wStart = points[bestIdx];
+          const wEnd = points[bestIdx + 1];
+          const avgRounded = Math.round(bestAvg);
+          let badgeTxt = 'Indoors Only';
+          let badgeCls = 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300';
+          if (avgRounded <= 100) {
+            badgeTxt = 'Safe Outdoors';
+            badgeCls = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
+          } else if (avgRounded <= 150) {
+            badgeTxt = 'Caution';
+            badgeCls = 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300';
+          }
+          els.bestWindowCard.innerHTML = `
+            <div>
+              <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Best 2-Hour Outdoor Window (Next 12h)</p>
+              <p class="text-base sm:text-lg font-extrabold mt-0.5">${wStart.fullLabel} – ${wEnd.label} IST &middot; Est. Avg AQI ${avgRounded}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${getOutdoorGuidance(avgRounded)}</p>
+            </div>
+            <span class="px-3 py-1.5 rounded-full text-xs font-bold ${badgeCls}">${badgeTxt}</span>
+          `;
+        }
+        const corrRows = [
+          { name: 'Temperature', r: corrs.temp, note: corrs.temp < 0 ? 'Cooler air traps pollution' : 'Warmer air correlation' },
+          { name: 'Humidity', r: corrs.humidity, note: corrs.humidity > 0 ? 'Higher humidity retains haze' : 'Drier air correlation' },
+          { name: 'Wind Speed', r: corrs.wind, note: corrs.wind < 0 ? 'Higher wind disperses AQI' : 'Calm wind accumulation' },
+          { name: 'CO (Combustion)', r: corrs.co, note: 'Exhaust/combustion co-movement' },
+          { name: 'Traffic Index', r: corrs.traffic, note: 'Rush-hour congestion & road dust' },
+        ];
+
+        els.driverCorrelations.innerHTML = corrRows
+          .map((d) => {
+            const pct = Math.min(100, Math.round(Math.abs(d.r || 0) * 100));
+            const color = (d.r || 0) >= 0 ? 'bg-rose-500' : 'bg-emerald-500';
+            return `
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span>${d.name}</span>
+                  <span>r = ${(d.r || 0).toFixed(2)}</span>
+                </div>
+                <div class="h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden mb-1">
+                  <div class="h-full ${color}" style="width: ${pct}%"></div>
+                </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">${d.note}</p>
+              </div>
+            `;
+          })
+          .join('');
+
+        if (!points.length) return;
+        const peak12 = Math.max(...points.map((p) => p.estAqi));
+        const low12 = Math.min(...points.map((p) => p.estAqi));
+        els.forecastRangeBadge.textContent = `12h Range: ${low12}–${peak12} US AQI`;
+        const avg12 = Math.round(avg(points.map((p) => p.estAqi)));
+        const rainTotal = Number(points.reduce((sum, p) => sum + (p.estRainMm || 0), 0).toFixed(1));
+        els.forecastQuickStats.innerHTML = [
+          { k: '12h Low', v: `${low12} AQI` },
+          { k: '12h Average', v: `${avg12} AQI` },
+          { k: '12h Peak', v: `${peak12} AQI` },
+          { k: 'Expected Rain', v: `${rainTotal} mm` },
+        ]
+          .map((item) => `
+            <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 text-center">
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">${item.k}</p>
+              <p class="text-sm font-extrabold mt-0.5">${item.v}</p>
+            </div>
+          `)
+          .join('');
+        els.forecastChartSubtitle.textContent = `Projected from latest reading (${state.logs[state.logs.length - 1].timestamp.slice(5, 16)} IST)`;
+
+        els.forecastTableBody.innerHTML = points
+          .map((p) => `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+              <td class="px-4 py-2.5 font-semibold">+${p.step}h (${p.fullLabel})</td>
+              <td class="px-4 py-2.5 font-extrabold">${p.estAqi}</td>
+              <td class="px-4 py-2.5 text-slate-500 dark:text-slate-400">${p.low}–${p.high}</td>
+              <td class="px-4 py-2.5"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${statusBadgeClass(p.status)}">${p.status}</span></td>
+              <td class="px-4 py-2.5">${p.estTemp} °C</td>
+              <td class="px-4 py-2.5">${p.estHum}%</td>
+              <td class="px-4 py-2.5">${p.estWind} km/h ${p.windDir ? `<span class="text-[10px] font-semibold text-slate-400">${p.windDir}</span>` : ''}</td>
+              <td class="px-4 py-2.5">${p.estRainMm > 0 ? `<span class="font-semibold text-sky-500">${p.estRainMm} mm</span>` : '0 mm'} <span class="text-[10px] text-slate-400">(${p.rainProb}%)</span></td>
+              <td class="px-4 py-2.5 text-slate-600 dark:text-slate-300">${p.guidance}</td>
+            </tr>
+          `)
+          .join('');
+
+        const actualSlice = state.logs.slice(-12);
+        const labels = [...actualSlice.map((r) => r.timestamp.slice(11, 16)), ...points.map((p) => p.label)];
+        const actualSeries = [...actualSlice.map((r) => r.aqi), ...points.map(() => null)];
+        const predSeries = actualSlice.map((_, i) => (i === actualSlice.length - 1 ? actualSlice[i].aqi : null)).concat(points.map((p) => p.estAqi));
+        const lowSeries = actualSlice.map(() => null).concat(points.map((p) => p.low));
+        const highSeries = actualSlice.map(() => null).concat(points.map((p) => p.high));
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(15, 23, 42, 0.08)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+
+        if (state.forecastChart) state.forecastChart.destroy();
+        state.forecastChart = new Chart(els.forecastChartCanvas, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Actual AQI (Last 12h)', data: actualSeries, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.12)', borderWidth: 2.5, tension: 0.3, fill: true, pointRadius: 3 },
+              { label: 'Predicted AQI (Next 12h)', data: predSeries, borderColor: '#f59e0b', borderDash: [6, 4], borderWidth: 2.5, tension: 0.3, pointRadius: 3.5, pointBackgroundColor: '#f59e0b', fill: false },
+              { label: 'Upper Bound', data: highSeries, borderColor: 'rgba(245, 158, 11, 0.25)', borderWidth: 1, pointRadius: 0, fill: '+1', backgroundColor: 'rgba(245, 158, 11, 0.08)' },
+              { label: 'Lower Bound', data: lowSeries, borderColor: 'rgba(245, 158, 11, 0.25)', borderWidth: 1, pointRadius: 0, fill: false },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: textColor, maxTicksLimit: 12, font: { size: 11 } } },
+              y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+            },
+          },
+        });
+      }
+
+      function populateFilters() {
+        const dates = Array.from(groupByDate(state.logs).keys()).sort();
+        const prevDaily = state.dailyFilter;
+        els.dailyDateSelect.innerHTML = `<option value="ALL">All Days</option>` + dates.map((d) => `<option value="${d}">${d}</option>`).join('');
+        state.dailyFilter = dates.includes(prevDaily) ? prevDaily : 'ALL';
+        els.dailyDateSelect.value = state.dailyFilter;
+
+        const prevLogDate = state.logDateFilter;
+        els.logDateFilter.innerHTML = `<option value="ALL">All Dates</option>` + dates.map((d) => `<option value="${d}">${d}</option>`).join('');
+        state.logDateFilter = dates.includes(prevLogDate) ? prevLogDate : 'ALL';
+        els.logDateFilter.value = state.logDateFilter;
+
+        const weeks = Array.from(new Set(dates.map(getWeekStartSunday))).sort();
+        els.weekSelect.innerHTML = weeks.map((sun) => `<option value="${sun}">${sun} to ${addDays(sun, 6)}</option>`).join('');
+        if (!weeks.includes(state.selectedWeekKey)) state.selectedWeekKey = weeks[weeks.length - 1] || '';
+        els.weekSelect.value = state.selectedWeekKey;
+      }
+
+      function renderDailyView() {
+        const byDate = groupByDate(state.logs);
+        const dates = state.dailyFilter === 'ALL' ? Array.from(byDate.keys()).sort() : [state.dailyFilter];
+
+        els.dailyCards.innerHTML = dates
+          .map((d) => {
+            const rows = byDate.get(d) || [];
+            if (!rows.length) return '';
+            const avgAqi = Math.round(avg(rows.map((r) => r.aqi)));
+            const minAqi = Math.min(...rows.map((r) => r.aqi));
+            const maxAqi = Math.max(...rows.map((r) => r.aqi));
+            const avgPm25 = Math.round(avg(rows.map((r) => r.pm25)));
+            const status = getStatusFromAqi(avgAqi);
+            return `
+              <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm">
+                <div class="flex items-start justify-between gap-3 mb-3">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">${dayName(d)} &middot; ${rows.length} readings</p>
+                    <h3 class="text-base font-bold mt-0.5">${d}</h3>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold ${statusBadgeClass(status)}">${status}</span>
+                </div>
+                <div class="grid grid-cols-4 gap-2 text-center py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 mb-3">
+                  <div><p class="text-[10px] text-slate-500">Avg AQI</p><p class="text-lg font-extrabold">${avgAqi}</p></div>
+                  <div><p class="text-[10px] text-slate-500">Min</p><p class="text-lg font-bold text-emerald-600 dark:text-emerald-400">${minAqi}</p></div>
+                  <div><p class="text-[10px] text-slate-500">Max</p><p class="text-lg font-bold text-rose-600 dark:text-rose-400">${maxAqi}</p></div>
+                  <div><p class="text-[10px] text-slate-500">PM2.5</p><p class="text-lg font-bold">${avgPm25}</p></div>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300"><strong>Takeaway:</strong> ${getOutdoorGuidance(avgAqi)}</p>
+              </div>
+            `;
+          })
+          .join('');
+
+        const filtered = state.dailyFilter === 'ALL' ? state.logs : (byDate.get(state.dailyFilter) || []);
+        els.dailyChartSubtitle.textContent = state.dailyFilter === 'ALL' ? `All ${filtered.length} logged readings (IST)` : `${filtered.length} readings on ${state.dailyFilter} (IST)`;
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(15, 23, 42, 0.08)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+
+        if (state.dailyChart) state.dailyChart.destroy();
+        state.dailyChart = new Chart(els.dailyChartCanvas, {
+          type: 'line',
+          data: {
+            labels: filtered.map((r) => state.dailyFilter === 'ALL' ? r.timestamp.slice(5, 16) : r.timestamp.slice(11, 16)),
+            datasets: [
+              { label: 'US AQI', data: filtered.map((r) => r.aqi), borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.14)', borderWidth: 2.5, tension: 0.3, fill: true, pointRadius: 3 },
+              { label: 'PM2.5 (µg/m³)', data: filtered.map((r) => r.pm25), borderColor: '#38bdf8', borderWidth: 2, tension: 0.3, fill: false, pointRadius: 2.5 },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: textColor, maxTicksLimit: 10, font: { size: 11 } } },
+              y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+            },
+          },
+        });
+
+        // 24-Hour Time-of-Day Pattern
+        const hourBuckets = Array.from({ length: 24 }, () => []);
+        state.logs.forEach((r) => hourBuckets[getHourFromTimestamp(r.timestamp)].push(r.aqi));
+        const hourLabels = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, '0')}:00`);
+        const hourAvgs = hourBuckets.map((b) => (b.length ? Math.round(avg(b)) : null));
+
+        if (state.hourlyPatternChart) state.hourlyPatternChart.destroy();
+        state.hourlyPatternChart = new Chart(els.hourlyPatternCanvas, {
+          type: 'bar',
+          data: {
+            labels: hourLabels,
+            datasets: [
+              {
+                label: 'Avg US AQI by Hour',
+                data: hourAvgs,
+                backgroundColor: hourAvgs.map((v) => {
+                  if (v === null) return 'rgba(148,163,184,0.2)';
+                  if (v <= 100) return 'rgba(16, 185, 129, 0.75)';
+                  if (v <= 200) return 'rgba(239, 68, 68, 0.75)';
+                  if (v <= 300) return 'rgba(147, 51, 234, 0.75)';
+                  return 'rgba(159, 18, 57, 0.85)';
+                }),
+                borderRadius: 5,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: textColor, maxTicksLimit: 12, font: { size: 11 } } },
+              y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } }, beginAtZero: true },
+            },
+          },
+        });
+      }
+
+      function renderWeeklyView() {
+        const sun = state.selectedWeekKey;
+        if (!sun) return;
+        const sat = addDays(sun, 6);
+        els.weeklyChartSubtitle.textContent = `Week of ${sun} (Sunday) through ${sat} (Saturday)`;
+
+        const byDate = groupByDate(state.logs);
+        const days = Array.from({ length: 7 }, (_, i) => addDays(sun, i));
+
+        const rows = days.map((d) => {
+          const list = byDate.get(d) || [];
+          if (!list.length) return { day: dayName(d), date: d, count: 0, avgAqi: null, minAqi: null, maxAqi: null, avgPm25: null, avgPm10: null, status: '—' };
+          const avgAqi = Math.round(avg(list.map((r) => r.aqi)));
+          return {
+            day: dayName(d),
+            date: d,
+            count: list.length,
+            avgAqi,
+            minAqi: Math.min(...list.map((r) => r.aqi)),
+            maxAqi: Math.max(...list.map((r) => r.aqi)),
+            avgPm25: Math.round(avg(list.map((r) => r.pm25))),
+            avgPm10: Math.round(avg(list.map((r) => r.pm10))),
+            status: getStatusFromAqi(avgAqi),
+          };
+        });
+
+        els.weeklyTableBody.innerHTML = rows
+          .map((r) => `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+              <td class="px-4 py-3 font-semibold">${r.day}</td>
+              <td class="px-4 py-3 text-slate-500 dark:text-slate-400">${r.date}</td>
+              <td class="px-4 py-3">${r.count}</td>
+              <td class="px-4 py-3 font-bold">${r.avgAqi ?? '—'}</td>
+              <td class="px-4 py-3">${r.minAqi ?? '—'}</td>
+              <td class="px-4 py-3">${r.maxAqi ?? '—'}</td>
+              <td class="px-4 py-3">${r.avgPm25 !== null ? r.avgPm25 + ' µg/m³' : '—'}</td>
+              <td class="px-4 py-3">${r.avgPm10 !== null ? r.avgPm10 + ' µg/m³' : '—'}</td>
+              <td class="px-4 py-3">${r.status === '—' ? '—' : `<span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${statusBadgeClass(r.status)}">${r.status}</span>`}</td>
+            </tr>
+          `)
+          .join('');
+
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(15, 23, 42, 0.08)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+
+        if (state.weeklyChart) state.weeklyChart.destroy();
+        state.weeklyChart = new Chart(els.weeklyChartCanvas, {
+          type: 'bar',
+          data: {
+            labels: rows.map((r) => `${r.day} (${r.date.slice(5)})`),
+            datasets: [
+              { label: 'Avg AQI', data: rows.map((r) => r.avgAqi), backgroundColor: 'rgba(14, 165, 233, 0.75)', borderRadius: 6 },
+              { label: 'Min AQI', data: rows.map((r) => r.minAqi), backgroundColor: 'rgba(16, 185, 129, 0.75)', borderRadius: 6 },
+              { label: 'Max AQI', data: rows.map((r) => r.maxAqi), backgroundColor: 'rgba(244, 63, 94, 0.75)', borderRadius: 6 },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+              y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } }, beginAtZero: true },
+            },
+          },
+        });
+      }
+
+      function renderLogTable() {
+        const filtered = state.logs
+          .filter((r) => (state.logDateFilter === 'ALL' || r.date === state.logDateFilter))
+          .filter((r) => (state.logStatusFilter === 'ALL' || r.status === state.logStatusFilter))
+          .slice()
+          .reverse();
+
+        els.logTableBody.innerHTML = filtered.length
+          ? filtered
+              .map((r) => `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                  <td class="px-3.5 py-2.5 font-medium">${r.timestamp}</td>
+                  <td class="px-3.5 py-2.5 font-bold">${r.aqi}</td>
+                  <td class="px-3.5 py-2.5"><span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${statusBadgeClass(r.status)}">${r.status}</span></td>
+                  <td class="px-3.5 py-2.5">${r.pm25}</td>
+                  <td class="px-3.5 py-2.5">${r.pm10}</td>
+                  <td class="px-3.5 py-2.5">${r.co}</td>
+                  <td class="px-3.5 py-2.5">${r.no2}</td>
+                  <td class="px-3.5 py-2.5">${r.so2}</td>
+                  <td class="px-3.5 py-2.5">${r.o3}</td>
+                  <td class="px-3.5 py-2.5">${r.temp}°C</td>
+                  <td class="px-3.5 py-2.5">${r.humidity}%</td>
+                  <td class="px-3.5 py-2.5">${r.wind} km/h</td>
+                  <td class="px-3.5 py-2.5">${r.uv}</td>
+                </tr>
+              `)
+              .join('')
+          : `<tr><td colspan="13" class="px-4 py-6 text-center text-slate-500">No readings match the selected filters.</td></tr>`;
+      }
+
+      function renderAnalyticsView(forecast) {
+        const logs = state.logs;
+        if (!logs.length) return;
+        const m = forecast.metrics || { r2: 0, mae: 0, rmse: 0, n: logs.length };
+        const ratios = logs.map((r) => (r.pm10 > 0 ? r.pm25 / r.pm10 : 0));
+        const latestRatio = ratios[ratios.length - 1];
+        const avgRatio = avg(ratios);
+        const ratioLabel = latestRatio >= 0.65 ? 'Smoke / Exhaust' : latestRatio >= 0.50 ? 'Mixed Sources' : 'Coarse Dust';
+
+        els.analyticsKpis.innerHTML = [
+          { label: 'Model Fit (R²)', val: m.r2.toFixed(2), sub: `${m.n} logged samples` },
+          { label: 'Mean Abs Error', val: `±${m.mae} AQI`, sub: `RMSE: ${m.rmse} AQI` },
+          { label: 'Latest PM2.5/PM10', val: latestRatio.toFixed(2), sub: ratioLabel },
+          { label: 'Avg PM2.5/PM10', val: avgRatio.toFixed(2), sub: avgRatio >= 0.65 ? 'Combustion dominant' : 'Mixed particulates' },
+        ]
+          .map((c) => `
+            <div class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 shadow-sm">
+              <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">${c.label}</p>
+              <p class="text-xl sm:text-2xl font-extrabold tracking-tight mt-1">${c.val}</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${c.sub}</p>
+            </div>
+          `)
+          .join('');
+
+        // Ratio Chart
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(15, 23, 42, 0.08)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+
+        if (state.ratioChart) state.ratioChart.destroy();
+        state.ratioChart = new Chart(els.ratioChartCanvas, {
+          type: 'line',
+          data: {
+            labels: logs.map((r) => r.timestamp.slice(5, 16)),
+            datasets: [
+              {
+                label: 'PM2.5 / PM10 Ratio',
+                data: ratios.map((v) => Number(v.toFixed(2))),
+                borderColor: '#a855f7',
+                backgroundColor: 'rgba(168, 85, 247, 0.14)',
+                borderWidth: 2.5,
+                tension: 0.3,
+                fill: true,
+                pointRadius: 2.5,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { color: textColor, maxTicksLimit: 8, font: { size: 10 } } },
+              y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } }, suggestedMin: 0.4, suggestedMax: 0.85 },
+            },
+          },
+        });
+
+        // Spike & Anomaly Detector
+        const deltas = [];
+        for (let i = 1; i < logs.length; i++) {
+          deltas.push({ idx: i, delta: logs[i].aqi - logs[i - 1].aqi, cur: logs[i], prev: logs[i - 1] });
+        }
+        const meanD = avg(deltas.map((d) => d.delta));
+        const stdD = Math.sqrt(avg(deltas.map((d) => (d.delta - meanD) ** 2))) || 1;
+        const spikes = deltas
+          .map((d) => ({ ...d, z: (d.delta - meanD) / stdD }))
+          .filter((d) => Math.abs(d.delta) >= 25 || Math.abs(d.z) >= 1.3)
+          .reverse();
+
+        els.anomalyList.innerHTML = spikes.length
+          ? spikes
+              .map((s) => {
+                const isUp = s.delta > 0;
+                const badgeCls = isUp
+                  ? 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300'
+                  : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
+                return `
+                  <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between gap-3">
+                    <div>
+                      <p class="text-xs font-bold">${s.cur.timestamp.slice(0, 16)} IST</p>
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400">${s.prev.aqi} &rarr; ${s.cur.aqi} AQI &middot; ${s.cur.temp}°C, ${s.cur.wind} km/h</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold shrink-0 ${badgeCls}">${isUp ? '+' : ''}${s.delta} (${s.z.toFixed(1)}&sigma;)</span>
+                  </div>
+                `;
+              })
+              .join('')
+          : '<p class="text-xs text-slate-500 py-4">No major hourly anomalies detected yet.</p>';
+
+        // Correlation Matrix
+        const fields = [
+          { key: 'aqi', label: 'AQI' },
+          { key: 'pm25', label: 'PM2.5' },
+          { key: 'pm10', label: 'PM10' },
+          { key: 'co', label: 'CO' },
+          { key: 'no2', label: 'NO₂' },
+          { key: 'o3', label: 'O₃' },
+          { key: 'temp', label: 'Temp' },
+          { key: 'humidity', label: 'Hum' },
+          { key: 'wind', label: 'Wind' },
+        ];
+        els.corrMatrixHead.innerHTML = `<tr><th class="px-3 py-2.5 text-left font-semibold">Metric</th>${fields.map((f) => `<th class="px-2.5 py-2.5 font-semibold">${f.label}</th>`).join('')}</tr>`;
+        els.corrMatrixBody.innerHTML = fields
+          .map((rowF) => {
+            const xs = logs.map((l) => l[rowF.key]);
+            const cells = fields
+              .map((colF) => {
+                const r = rowF.key === colF.key ? 1 : pearson(xs, logs.map((l) => l[colF.key]));
+                const absR = Math.abs(r);
+                let bg = '';
+                if (rowF.key !== colF.key) {
+                  if (r >= 0.5) bg = 'bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold';
+                  else if (r <= -0.5) bg = 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold';
+                  else if (absR >= 0.25) bg = 'bg-slate-200/60 dark:bg-slate-800/70';
+                } else {
+                  bg = 'text-slate-400';
+                }
+                return `<td class="px-2.5 py-2 ${bg}">${r.toFixed(2)}</td>`;
+              })
+              .join('');
+            return `<tr><td class="px-3 py-2 text-left font-bold">${rowF.label}</td>${cells}</tr>`;
+          })
+          .join('');
+      }
+
+      function updateTabsUI() {
+        const active = 'bg-sky-600 text-white shadow-sm';
+        const inactive = 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+
+        els.tabForecast.className = `px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${state.tab === 'forecast' ? active : inactive}`;
+        els.tabDaily.className = `px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${state.tab === 'daily' ? active : inactive}`;
+        els.tabWeekly.className = `px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${state.tab === 'weekly' ? active : inactive}`;
+        els.tabAnalytics.className = `px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${state.tab === 'analytics' ? active : inactive}`;
+        els.tabLog.className = `px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${state.tab === 'log' ? active : inactive}`;
+
+        els.viewForecast.classList.toggle('hidden', state.tab !== 'forecast');
+        els.viewDaily.classList.toggle('hidden', state.tab !== 'daily');
+        els.viewWeekly.classList.toggle('hidden', state.tab !== 'weekly');
+        els.viewAnalytics.classList.toggle('hidden', state.tab !== 'analytics');
+        els.viewLog.classList.toggle('hidden', state.tab !== 'log');
+        if (state.tab === 'analytics' && state.ratioChart) state.ratioChart.resize();
+
+        if (state.tab === 'forecast' && state.forecastChart) state.forecastChart.resize();
+        if (state.tab === 'daily') { if (state.dailyChart) state.dailyChart.resize(); if (state.hourlyPatternChart) state.hourlyPatternChart.resize(); }
+        if (state.tab === 'weekly' && state.weeklyChart) state.weeklyChart.resize();
+      }
+
+      function renderAll() {
+        updateHeaderSubtitle();
+        populateFilters();
+        const forecast = build12HourForecast(state.logs);
+        renderKPIs(forecast);
+        renderForecastView(forecast);
+        renderDailyView();
+        renderWeeklyView();
+        renderAnalyticsView(forecast);
+        renderAnalyticsView(forecast);
+        renderLogTable();
+        updateTabsUI();
+      }
+
+      async function fetchCityAirAndWeather(loc) {
+        try {
+          const tz = encodeURIComponent(loc.tz || 'auto');
+          const aqUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.lat}&longitude=${loc.lon}&hourly=us_aqi,pm2_5,pm10,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,uv_index&timezone=${tz}&past_days=3&forecast_days=1`;
+          const wxUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,precipitation,precipitation_probability&timezone=${tz}&past_days=3&forecast_days=2`;
+          const [aqRes, wxRes] = await Promise.all([fetch(aqUrl), fetch(wxUrl)]);
+          if (!aqRes.ok || !wxRes.ok) throw new Error('City feed unavailable');
+          const [aq, wx] = await Promise.all([aqRes.json(), wxRes.json()]);
+
+          const wxMap = new Map();
+          const wh = wx.hourly || {};
+          (wh.time || []).forEach((t, i) => {
+            wxMap.set(t, {
+              temp: wh.temperature_2m ? wh.temperature_2m[i] : 20,
+              humidity: wh.relative_humidity_2m ? wh.relative_humidity_2m[i] : 50,
+              wind: wh.wind_speed_10m ? wh.wind_speed_10m[i] : 5,
+              windDeg: wh.wind_direction_10m ? wh.wind_direction_10m[i] : null,
+              rainMm: wh.precipitation ? wh.precipitation[i] : 0,
+              rainProb: wh.precipitation_probability ? wh.precipitation_probability[i] : 0,
+            });
+          });
+          state.weatherForecast = wxMap;
+
+          const ah = aq.hourly || {};
+          const nowIso = new Date().toISOString().slice(0, 13);
+          const rows = [];
+          (ah.time || []).forEach((t, i) => {
+            if (t.slice(0, 13) > nowIso) return;
+            const aqi = ah.us_aqi ? ah.us_aqi[i] : null;
+            if (aqi === null || aqi === undefined) return;
+            const w = wxMap.get(t) || { temp: 20, humidity: 50, wind: 5 };
+            rows.push({
+              date: t.slice(0, 10),
+              timestamp: `${t.slice(0, 10)} ${t.slice(11, 16)}:00`,
+              aqi: Math.round(aqi),
+              status: getStatusFromAqi(Math.round(aqi)),
+              pm25: Math.round(ah.pm2_5 ? ah.pm2_5[i] : 0),
+              pm10: Math.round(ah.pm10 ? ah.pm10[i] : 0),
+              co: Math.round(ah.carbon_monoxide ? ah.carbon_monoxide[i] : 0),
+              no2: Math.round(ah.nitrogen_dioxide ? ah.nitrogen_dioxide[i] : 0),
+              so2: Math.round(ah.sulphur_dioxide ? ah.sulphur_dioxide[i] : 0),
+              o3: Math.round(ah.ozone ? ah.ozone[i] : 0),
+              temp: Math.round(w.temp),
+              humidity: Math.round(w.humidity),
+              wind: Number((w.wind || 0).toFixed(1)),
+              uv: Number(((ah.uv_index ? ah.uv_index[i] : 0) || 0).toFixed(1)),
+              traffic: '—',
+            });
+          });
+          if (!rows.length) throw new Error('No hourly rows returned');
+          state.logs = rows;
+          state.sourceLabel = `Live · ${loc.name}`;
+          state.lastSyncedStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }) + ' IST';
+          state.dailyFilter = 'ALL';
+          state.logDateFilter = 'ALL';
+          renderAll();
+          checkAqiAlerts(rows[rows.length - 1]);
+          showToast(`Loaded ${loc.name} (${rows.length} hourly readings)`);
+        } catch (err) {
+          showToast(`Could not load ${loc.name} right now`);
+        }
+      }
+
+      async function refreshActiveLocation() {
+        const loc = LOCATIONS[state.locationKey] || LOCATIONS.gurgaon;
+        els.pageTitle.textContent = `${loc.name} AQI Trends & 12h Forecast`;
+        document.title = `${loc.name} AQI — Daily, Weekly & 12-Hour Forecast`;
+        els.btnRefreshCsv.disabled = true;
+        els.btnRefreshCsv.textContent = 'Syncing...';
+        try {
+          await fetchCityAirAndWeather(loc);
+        } finally {
+          els.btnRefreshCsv.disabled = false;
+          els.btnRefreshCsv.textContent = 'Refresh Data';
+        }
+      }
+
+      async function searchCustomCity(query) {
+        if (!query.trim()) return;
+        els.citySearchResults.innerHTML = '<p class="text-slate-400 py-2">Searching...</p>';
+        try {
+          const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query.trim())}&count=5&language=en&format=json`);
+          const data = await res.json();
+          const results = data.results || [];
+          if (!results.length) {
+            els.citySearchResults.innerHTML = '<p class="text-slate-400 py-2">No matching cities found.</p>';
+            return;
+          }
+          els.citySearchResults.innerHTML = results
+            .map((r, idx) => `
+              <button type="button" data-city-idx="${idx}" class="w-full text-left px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-sky-950/50 transition-colors flex items-center justify-between">
+                <span class="font-semibold">${r.name}${r.admin1 ? ', ' + r.admin1 : ''} (${r.country_code || ''})</span>
+                <span class="text-[10px] text-slate-400">${r.latitude.toFixed(2)}, ${r.longitude.toFixed(2)}</span>
+              </button>
+            `)
+            .join('');
+          els.citySearchResults.querySelectorAll('button[data-city-idx]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const r = results[Number(btn.dataset.cityIdx)];
+              const key = `custom_${r.id}`;
+              LOCATIONS[key] = { name: r.name, lat: r.latitude, lon: r.longitude, tz: r.timezone || 'auto', useSheet: false };
+              const opt = document.createElement('option');
+              opt.value = key;
+              opt.textContent = `📍 ${r.name}`;
+              els.locationSelect.insertBefore(opt, els.locationSelect.querySelector('option[value="custom"]'));
+              els.locationSelect.value = key;
+              state.locationKey = key;
+              els.cityModal.classList.add('hidden');
+              refreshActiveLocation();
+            });
+          });
+        } catch (err) {
+          els.citySearchResults.innerHTML = '<p class="text-rose-400 py-2">City search unavailable.</p>';
+        }
+      }
+
+      async function fetchWeatherForecast() {
+        const loc = LOCATIONS[state.locationKey] || LOCATIONS.gurgaon;
+        try {
+          const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,precipitation,precipitation_probability&timezone=${encodeURIComponent(loc.tz || 'auto')}&forecast_days=2`;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('Weather forecast fetch failed');
+          const json = await res.json();
+          const h = json.hourly || {};
+          const map = new Map();
+          (h.time || []).forEach((t, i) => {
+            map.set(t, {
+              temp: h.temperature_2m ? h.temperature_2m[i] : 20,
+              humidity: h.relative_humidity_2m ? h.relative_humidity_2m[i] : 50,
+              wind: h.wind_speed_10m ? h.wind_speed_10m[i] : 3.6,
+              windDeg: h.wind_direction_10m ? h.wind_direction_10m[i] : null,
+              rainMm: h.precipitation ? h.precipitation[i] : 0,
+              rainProb: h.precipitation_probability ? h.precipitation_probability[i] : 0,
+            });
+          });
+          state.weatherForecast = map;
+          renderAll();
+        } catch (err) {
+          state.weatherForecast = null;
+          renderAll();
+        }
+      }
+
+      function copyWhatsappSummary() {
+        const logs = state.logs;
+        if (!logs.length) return;
+        const latest = logs[logs.length - 1];
+        const forecast = build12HourForecast(logs);
+        const pts = forecast.points;
+        const nextHr = pts[0];
+        let bestLine = '';
+        if (pts.length >= 2) {
+          let bestIdx = 0, bestAvg = Infinity;
+          for (let i = 0; i < pts.length - 1; i++) {
+            const pAvg = (pts[i].estAqi + pts[i + 1].estAqi) / 2;
+            if (pAvg < bestAvg) { bestAvg = pAvg; bestIdx = i; }
+          }
+          bestLine = `\n*Best 2h Window:* ${pts[bestIdx].label}–${pts[bestIdx + 1].label} IST (Est. ${Math.round(bestAvg)})`;
+        }
+        const locName = (LOCATIONS[state.locationKey] || LOCATIONS.gurgaon).name;
+        const text = `*${locName} AQI Update* (${latest.timestamp.slice(0, 16)} IST)\n• *Current AQI:* ${latest.aqi} (${latest.status})\n• *PM2.5 / PM10:* ${latest.pm25} / ${latest.pm10} µg/m³\n• *Weather:* ${latest.temp}°C, ${latest.humidity}% humidity, ${latest.wind} km/h wind${nextHr ? `\n• *Next-Hr Est.:* ${nextHr.estAqi} (${nextHr.status})` : ''}${bestLine}\n• *Guidance:* ${getOutdoorGuidance(latest.aqi)}\n\nLive Dashboard & 12h Forecast:\nhttps://aqiforecast.online/`;
+
+        const fallback = () => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); showToast('Copied WhatsApp summary'); }
+          catch (e) { showToast('Could not copy summary'); }
+          document.body.removeChild(ta);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => showToast('Copied WhatsApp summary'), fallback);
+        } else {
+          fallback();
+        }
+      }
+
+      function updateHeaderSubtitle() {
+        const nextTxt = state.autoRefreshMinutes > 0
+          ? `Next in ${Math.max(1, Math.ceil(state.secondsUntilRefresh / 60))}m`
+          : 'Auto-refresh off';
+        els.headerSubtitle.textContent = `${state.logs.length} readings · ${state.sourceLabel} · Synced ${state.lastSyncedStr} · ${nextTxt}`;
+      }
+
+      function checkAqiAlerts(latest) {
+        if (!latest) return;
+        let msg = '';
+        if (latest.aqi >= state.alertHigh) msg = `High AQI Alert: Gurgaon hit ${latest.aqi} (${latest.status})`;
+        else if (latest.aqi <= state.alertLow) msg = `Clean Window Alert: Gurgaon AQI dropped to ${latest.aqi} (${latest.status})`;
+        if (!msg) return;
+        showToast(msg);
+        try {
+          if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            new Notification('Gurgaon AQI Alert', { body: msg });
+          }
+        } catch (e) {}
+      }
+
+      function startAutoRefresh() {
+        if (state.autoRefreshTimer) {
+          clearInterval(state.autoRefreshTimer);
+          state.autoRefreshTimer = null;
+        }
+        if (state.autoRefreshMinutes > 0) {
+          state.secondsUntilRefresh = state.autoRefreshMinutes * 60;
+          updateHeaderSubtitle();
+          state.autoRefreshTimer = setInterval(() => {
+            if (state.secondsUntilRefresh <= 1) {
+              state.secondsUntilRefresh = state.autoRefreshMinutes * 60;
+              refreshActiveLocation();
+            } else {
+              state.secondsUntilRefresh -= 1;
+            }
+            updateHeaderSubtitle();
+          }, 1000);
+        } else {
+          state.secondsUntilRefresh = 0;
+          updateHeaderSubtitle();
+        }
+      }
+
+      function initTheme() {
+        let saved = 'dark';
+        try { saved = localStorage.getItem('gurgaon_aqi_forecast_theme') || 'dark'; } catch (e) {}
+        document.documentElement.classList.toggle('dark', saved === 'dark');
+      }
+
+      // Event Listeners
+      els.tabForecast.addEventListener('click', () => { state.tab = 'forecast'; updateTabsUI(); });
+      els.tabDaily.addEventListener('click', () => { state.tab = 'daily'; updateTabsUI(); });
+      els.tabWeekly.addEventListener('click', () => { state.tab = 'weekly'; updateTabsUI(); });
+      els.tabAnalytics.addEventListener('click', () => { state.tab = 'analytics'; updateTabsUI(); });
+      els.tabLog.addEventListener('click', () => { state.tab = 'log'; updateTabsUI(); });
+
+      els.sliderWind.addEventListener('input', (e) => {
+        state.windOffset = Number(e.target.value);
+        els.windOffsetVal.textContent = `${state.windOffset > 0 ? '+' : ''}${state.windOffset.toFixed(1)} km/h`;
+        const forecast = build12HourForecast(state.logs);
+        renderKPIs(forecast);
+        renderForecastView(forecast);
+      });
+
+      els.sliderTemp.addEventListener('input', (e) => {
+        state.tempOffset = Number(e.target.value);
+        els.tempOffsetVal.textContent = `${state.tempOffset > 0 ? '+' : ''}${state.tempOffset.toFixed(1)} °C`;
+        const forecast = build12HourForecast(state.logs);
+        renderKPIs(forecast);
+        renderForecastView(forecast);
+      });
+
+      els.sliderRain.addEventListener('input', (e) => {
+        state.rainOffset = Number(e.target.value);
+        els.rainOffsetVal.textContent = `${state.rainOffset.toFixed(1)} mm/h`;
+        const forecast = build12HourForecast(state.logs);
+        renderKPIs(forecast);
+        renderForecastView(forecast);
+      });
+
+      els.btnResetWhatif.addEventListener('click', () => {
+        state.windOffset = 0;
+        state.tempOffset = 0;
+        state.rainOffset = 0;
+        els.sliderWind.value = 0;
+        els.sliderTemp.value = 0;
+        els.sliderRain.value = 0;
+        els.windOffsetVal.textContent = '0.0 km/h';
+        els.tempOffsetVal.textContent = '0 °C';
+        els.rainOffsetVal.textContent = '0.0 mm/h';
+        const forecast = build12HourForecast(state.logs);
+        renderKPIs(forecast);
+        renderForecastView(forecast);
+      });
+
+      els.dailyDateSelect.addEventListener('change', (e) => { state.dailyFilter = e.target.value; renderDailyView(); });
+      els.weekSelect.addEventListener('change', (e) => { state.selectedWeekKey = e.target.value; renderWeeklyView(); });
+      els.logDateFilter.addEventListener('change', (e) => { state.logDateFilter = e.target.value; renderLogTable(); });
+      els.logStatusFilter.addEventListener('change', (e) => { state.logStatusFilter = e.target.value; renderLogTable(); });
+
+      els.autoRefreshSelect.addEventListener('change', (e) => {
+        state.autoRefreshMinutes = Number(e.target.value);
+        startAutoRefresh();
+        showToast(state.autoRefreshMinutes ? `Auto-refresh every ${state.autoRefreshMinutes}m` : 'Auto-refresh off');
+      });
+      els.locationSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === 'custom') {
+          els.locationSelect.value = state.locationKey;
+          els.cityModal.classList.remove('hidden');
+          els.citySearchInput.focus();
+          return;
+        }
+        state.locationKey = val;
+        refreshActiveLocation();
+      });
+      els.btnCloseCityModal.addEventListener('click', () => els.cityModal.classList.add('hidden'));
+      els.btnCitySearch.addEventListener('click', () => searchCustomCity(els.citySearchInput.value));
+      els.citySearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') searchCustomCity(els.citySearchInput.value);
+      });
+      els.btnRefreshCsv.addEventListener('click', refreshActiveLocation);
+      els.btnCopyWhatsapp.addEventListener('click', copyWhatsappSummary);
+      els.alertHighInput.addEventListener('change', (e) => {
+        state.alertHigh = Number(e.target.value) || 350;
+        try { localStorage.setItem('gurgaon_aqi_alert_high', String(state.alertHigh)); } catch (err) {}
+        showToast(`High alert set to ${state.alertHigh}`);
+      });
+      els.alertLowInput.addEventListener('change', (e) => {
+        state.alertLow = Number(e.target.value) || 150;
+        try { localStorage.setItem('gurgaon_aqi_alert_low', String(state.alertLow)); } catch (err) {}
+        showToast(`Clean alert set to ${state.alertLow}`);
+      });
+      els.btnEnableNotif.addEventListener('click', () => {
+        try {
+          if (typeof Notification === 'undefined') {
+            els.alertStatusText.textContent = 'Browser notifications unsupported';
+            return;
+          }
+          Notification.requestPermission().then((perm) => {
+            els.alertStatusText.textContent = perm === 'granted' ? 'Browser alerts enabled' : 'In-page alerts only';
+            showToast(perm === 'granted' ? 'Browser notifications enabled' : 'Using in-page alerts');
+          });
+        } catch (err) {
+          els.alertStatusText.textContent = 'In-page alerts active';
+        }
+      });
+      els.btnTheme.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        try { localStorage.setItem('gurgaon_aqi_forecast_theme', isDark ? 'dark' : 'light'); } catch (e) {}
+        const forecast = build12HourForecast(state.logs);
+        renderForecastView(forecast);
+        renderDailyView();
+        renderWeeklyView();
+      });
+
+      // Init
+      initTheme();
+      renderAll();
+      startAutoRefresh();
+      refreshActiveLocation();
+    })();
+  </script>
+</body>
+</html>
