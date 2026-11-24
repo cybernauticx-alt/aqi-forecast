@@ -1,110 +1,117 @@
 name: Update Ground Station AQI & Forecast (WAQI / CPCB)
+
 on:
   schedule:
-    - cron: */15 * * * *
-  workflow_dispatch: null
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   update-stations:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Fetch live CPCB ground stations, history & WAQI forecasts
         env:
-          WAQI_TOKEN: "${{ secrets.WAQI_TOKEN }}"
-        run: "python3 - << 'EOF'
-import json, os, urllib.request
-from datetime import datetime, timezone
+          WAQI_TOKEN: ${{ secrets.WAQI_TOKEN }}
+        run: |
+          python3 - << 'EOF'
+          import json, os, urllib.request
+          from datetime import datetime, timezone
 
-token = os.environ.get('WAQI_TOKEN', '').strip()
-if not token:
-    raise SystemExit('WAQI_TOKEN secret is not set in GitHub Actions Secrets.')
+          token = os.environ.get('WAQI_TOKEN', '').strip()
+          if not token:
+              raise SystemExit('WAQI_TOKEN secret is not set in GitHub Actions Secrets.')
 
-US_PM25_INV = [(0, 50, 0, 9.0), (51, 100, 9.1, 35.4), (101, 150, 35.5, 55.4), (151, 200, 55.5, 125.4), (201, 300, 125.5, 225.4), (301, 500, 225.5, 325.4)]
-US_PM10_INV = [(0, 50, 0, 54), (51, 100, 55, 154), (101, 150, 155, 254), (151, 200, 255, 354), (201, 300, 355, 424), (301, 500, 425, 604)]
+          US_PM25_INV = [(0, 50, 0, 9.0), (51, 100, 9.1, 35.4), (101, 150, 35.5, 55.4), (151, 200, 55.5, 125.4), (201, 300, 125.5, 225.4), (301, 500, 225.5, 325.4)]
+          US_PM10_INV = [(0, 50, 0, 54), (51, 100, 55, 154), (101, 150, 155, 254), (151, 200, 255, 354), (201, 300, 355, 424), (301, 500, 425, 604)]
 
-def inv_sub(idx, bps):
-    if idx is None:
-        return None
-    v = float(idx)
-    for i_lo, i_hi, c_lo, c_hi in bps:
-        if v <= i_hi:
-            return round(((c_hi - c_lo) / max(1, i_hi - i_lo)) * (v - i_lo) + c_lo)
-    last = bps[-1]
-    return round(last[3] + ((v - last[1]) / 100.0) * 100.0)
+          def inv_sub(idx, bps):
+              if idx is None:
+                  return None
+              v = float(idx)
+              for i_lo, i_hi, c_lo, c_hi in bps:
+                  if v <= i_hi:
+                      return round(((c_hi - c_lo) / max(1, i_hi - i_lo)) * (v - i_lo) + c_lo)
+              last = bps[-1]
+              return round(last[3] + ((v - last[1]) / 100.0) * 100.0)
 
-# Load existing history so we accumulate a rolling 96-reading WAQI ground-station log per city
-history = {}
-if os.path.exists('ground-stations.json'):
-    try:
-        prev = json.load(open('ground-stations.json', 'r', encoding='utf-8'))
-        if isinstance(prev.get('history'), dict):
-            history = prev['history']
-    except Exception:
-        history = {}
+          # Load existing history so we accumulate a rolling 96-reading WAQI ground-station log per city
+          history = {}
+          if os.path.exists('ground-stations.json'):
+              try:
+                  prev = json.load(open('ground-stations.json', 'r', encoding='utf-8'))
+                  if isinstance(prev.get('history'), dict):
+                      history = prev['history']
+              except Exception:
+                  history = {}
 
-cities = {
-    'gurgaon':    (28.4595, 77.0266),
-    'delhi':      (28.6139, 77.2090),
-    'noida':      (28.5355, 77.3910),
-    'faridabad':  (28.4089, 77.3178),
-    'ghaziabad':  (28.6692, 77.4538),
-    'chandigarh': (30.7333, 76.7794),
-    'jaipur':     (26.9124, 75.7873),
-    'mumbai':     (19.0760, 72.8777),
-    'bengaluru':  (12.9716, 77.5946),
-}
+          cities = {
+              'gurgaon':    (28.4595, 77.0266),
+              'delhi':      (28.6139, 77.2090),
+              'noida':      (28.5355, 77.3910),
+              'faridabad':  (28.4089, 77.3178),
+              'ghaziabad':  (28.6692, 77.4538),
+              'chandigarh': (30.7333, 76.7794),
+              'jaipur':     (26.9124, 75.7873),
+              'mumbai':     (19.0760, 72.8777),
+              'bengaluru':  (12.9716, 77.5946),
+          }
 
-stations = {}
-for key, (lat, lon) in cities.items():
-    url = f'https://api.waqi.info/feed/geo:{lat};{lon}/?token={token}'
-    try:
-        with urllib.request.urlopen(url, timeout=15) as resp:
-            payload = json.loads(resp.read().decode('utf-8'))
-        if payload.get('status') == 'ok' and payload.get('data'):
-            d = payload['data']
-            iaqi = d.get('iaqi') or {}
-            stations[key] = {
-                'aqi': d.get('aqi'),
-                'time': d.get('time'),
-                'city': d.get('city'),
-                'dominentpol': d.get('dominentpol'),
-                'iaqi': iaqi,
-                'forecast': d.get('forecast'),
-            }
-            ts = (d.get('time') or {}).get('s') or ''
-            if ts and isinstance(d.get('aqi'), (int, float)):
-                city_hist = history.get(key, [])
-                if not city_hist or city_hist[-1].get('time') != ts:
-                    city_hist.append({
-                        'time': ts,
-                        'usAqi': round(d['aqi']),
-                        'pm25': inv_sub((iaqi.get('pm25') or {}).get('v'), US_PM25_INV),
-                        'pm10': inv_sub((iaqi.get('pm10') or {}).get('v'), US_PM10_INV),
-                        'co': round((iaqi.get('co') or {}).get('v', 0) * 100) if 'co' in iaqi else None,
-                        'no2': round((iaqi.get('no2') or {}).get('v', 0)) if 'no2' in iaqi else None,
-                        'so2': round((iaqi.get('so2') or {}).get('v', 0)) if 'so2' in iaqi else None,
-                        'o3': round((iaqi.get('o3') or {}).get('v', 0)) if 'o3' in iaqi else None,
-                    })
-                    history[key] = city_hist[-96:]
-    except Exception as exc:
-        print(f'Warning: failed to fetch {key}: {exc}')
+          stations = {}
+          for key, (lat, lon) in cities.items():
+              url = f'https://api.waqi.info/feed/geo:{lat};{lon}/?token={token}'
+              try:
+                  with urllib.request.urlopen(url, timeout=15) as resp:
+                      payload = json.loads(resp.read().decode('utf-8'))
+                  if payload.get('status') == 'ok' and payload.get('data'):
+                      d = payload['data']
+                      iaqi = d.get('iaqi') or {}
+                      stations[key] = {
+                          'aqi': d.get('aqi'),
+                          'time': d.get('time'),
+                          'city': d.get('city'),
+                          'dominentpol': d.get('dominentpol'),
+                          'iaqi': iaqi,
+                          'forecast': d.get('forecast'),
+                      }
+                      ts = (d.get('time') or {}).get('s') or ''
+                      if ts and isinstance(d.get('aqi'), (int, float)):
+                          city_hist = history.get(key, [])
+                          if not city_hist or city_hist[-1].get('time') != ts:
+                              city_hist.append({
+                                  'time': ts,
+                                  'usAqi': round(d['aqi']),
+                                  'pm25': inv_sub((iaqi.get('pm25') or {}).get('v'), US_PM25_INV),
+                                  'pm10': inv_sub((iaqi.get('pm10') or {}).get('v'), US_PM10_INV),
+                                  'co': round((iaqi.get('co') or {}).get('v', 0) * 100) if 'co' in iaqi else None,
+                                  'no2': round((iaqi.get('no2') or {}).get('v', 0)) if 'no2' in iaqi else None,
+                                  'so2': round((iaqi.get('so2') or {}).get('v', 0)) if 'so2' in iaqi else None,
+                                  'o3': round((iaqi.get('o3') or {}).get('v', 0)) if 'o3' in iaqi else None,
+                              })
+                              history[key] = city_hist[-96:]
+              except Exception as exc:
+                  print(f'Warning: failed to fetch {key}: {exc}')
 
-out = {
-    'updated_utc': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
-    'stations': stations,
-    'history': history,
-}
-with open('ground-stations.json', 'w', encoding='utf-8') as f:
-    json.dump(out, f, indent=2)
-print(f'Saved {len(stations)} WAQI stations + rolling history to ground-stations.json')
-EOF
-"
+          out = {
+              'updated_utc': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'stations': stations,
+              'history': history,
+          }
+          with open('ground-stations.json', 'w', encoding='utf-8') as f:
+              json.dump(out, f, indent=2)
+          print(f'Saved {len(stations)} WAQI stations + rolling history to ground-stations.json')
+          EOF
+
       - name: Commit updated ground-stations.json
-        run: "git config user.name \"github-actions[bot]\"
-git config user.email \"github-actions[bot]@users.noreply.github.com\"
-git add ground-stations.json
-git diff --staged --quiet || git commit -m \"chore: update WAQI ground-station AQI & forecast snapshot\"
-git push"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ground-stations.json
+          git diff --staged --quiet || git commit -m "chore: update WAQI ground-station AQI & forecast snapshot"
+          git push
+
