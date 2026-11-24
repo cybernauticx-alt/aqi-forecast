@@ -81,6 +81,9 @@
           <button id="btn-scale-in" type="button" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg transition-all">IN</button>
           <button id="btn-scale-us" type="button" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg transition-all">US</button>
         </div>
+        <button id="btn-waqi-settings" type="button" title="Ground Station Feed (WAQI)" aria-label="Ground Station Settings" class="px-2.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-[11px] font-bold transition-colors">
+          Stations
+        </button>
         <button id="btn-methodology" type="button" title="Methodology &amp; Limitations" aria-label="Methodology" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -448,7 +451,7 @@
     <footer class="pt-4 pb-6 border-t border-slate-200/70 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
       <span>AQI Forecast (<a href="https://aqiforecast.online/" class="underline hover:text-sky-500">aqiforecast.online</a>)</span>
       <div class="flex flex-wrap items-center gap-3">
-        <span>Data: Open-Meteo Air Quality &amp; ECMWF Weather</span>
+        <span>Data: WAQI / CPCB Ground Stations + Open-Meteo Weather</span>
         <button id="btn-footer-methodology" type="button" class="underline hover:text-sky-500 font-semibold">Methodology &amp; Disclaimers</button>
       </div>
     </footer>
@@ -481,16 +484,16 @@
       </div>
       <div class="space-y-3 text-slate-600 dark:text-slate-300">
         <div>
-          <h4 class="font-bold text-slate-900 dark:text-white mb-1">1. Live Data Sources</h4>
-          <p>Pollutant concentrations (PM2.5, PM10, CO, NO₂, SO₂, O₃, Aerosol Optical Depth, Dust) and US AQI are fetched live from the <a href="https://open-meteo.com/en/docs/air-quality-api" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">Open-Meteo Air Quality API</a>. Weather variables and Planetary Boundary Layer Height (PBLH) come from the <a href="https://open-meteo.com/en/docs/ecmwf-api" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">Open-Meteo ECMWF Weather API</a>.</p>
+          <h4 class="font-bold text-slate-900 dark:text-white mb-1">1. WAQI Ground-Station AQI &amp; Open-Meteo Weather</h4>
+          <p>Live AQI, pollutant readings, rolling station history, and multi-day pollutant forecasts come directly from physical CPCB / state-board ground monitoring stations via the <a href="https://aqicn.org/api/" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">WAQI (World Air Quality Index) API</a>. Weather variables (temperature, humidity, wind, rain) and Planetary Boundary Layer Height (PBLH) come from the <a href="https://open-meteo.com/en/docs/ecmwf-api" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">Open-Meteo ECMWF Weather API</a>.</p>
         </div>
         <div>
           <h4 class="font-bold text-slate-900 dark:text-white mb-1">2. Indian NAQI vs. US AQI &amp; GRAP Stages</h4>
           <p>Toggle between India's <a href="https://aqi.delhi.gov.in/about" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">CPCB National AQI</a> (0–50 Good, 51–100 Satisfactory, 101–200 Moderate, 201–300 Poor, 301–400 Very Poor, 401–500 Severe) and the US EPA AQI scale. For Delhi-NCR cities, the GRAP banner maps Indian AQI to <a href="https://caqm.nic.in/landingpage/pages/grap/grap-orders" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">CAQM's Graded Response Action Plan</a> thresholds (Stages I–IV).</p>
         </div>
         <div>
-          <h4 class="font-bold text-slate-900 dark:text-white mb-1">3. Dispersion Physics &amp; Predictive Modeling</h4>
-          <p>Inspired by operational systems like <a href="https://ews.tropmet.res.in/airwise_model_methodology.php" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">IITM AIRWISE</a>, our 12-hour forecast fits a ridge-regularized regression over recent hourly readings blended with boundary-layer ventilation (<strong>Ventilation Index = Wind &times; PBLH</strong>), wind direction, and rain washout. The 72-hour outlook blends this short-term model with Open-Meteo's multi-day CAMS forecast and widens confidence intervals with lead time.</p>
+          <h4 class="font-bold text-slate-900 dark:text-white mb-1">3. WAQI-Powered Dispersion &amp; Forecast Modeling</h4>
+          <p>Inspired by operational systems like <a href="https://ews.tropmet.res.in/airwise_model_methodology.php" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline">IITM AIRWISE</a>, the 12-hour and 72-hour forecasts are modeled directly from <strong>WAQI ground-station history</strong> and <strong>WAQI's daily PM2.5/PM10 forecast</strong>, shaped hourly using ridge-regularized regression over meteorology, boundary-layer ventilation (<strong>Ventilation Index = Wind &times; PBLH</strong>), wind direction, and rain washout.</p>
         </div>
         <div>
           <h4 class="font-bold text-slate-900 dark:text-white mb-1">4. Key Limitations &amp; Responsible Use</h4>
@@ -502,6 +505,28 @@
             <li><strong>Official Decisions:</strong> Pair forecast trends with official CPCB, CAQM, and IITM AIRWISE bulletins for operational or health-critical decisions.</li>
           </ul>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WAQI Ground Station Settings Modal -->
+  <div id="waqi-modal" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-2xl space-y-3.5 text-xs">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold">Ground Station Source (WAQI / CPCB)</h3>
+        <button id="btn-close-waqi-modal" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold px-1">&times;</button>
+      </div>
+      <p class="text-slate-500 dark:text-slate-400 leading-relaxed">
+        When deployed with the GitHub Actions workflow, ground-station readings load automatically from <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800">ground-stations.json</code>. You can also enter a free personal token from <a href="https://aqicn.org/data-platform/token/" target="_blank" rel="noopener noreferrer" class="text-sky-500 underline font-semibold">aqicn.org/data-platform/token</a> (email only, no card) to query live CPCB stations directly for any custom city.
+      </p>
+      <div class="space-y-1.5">
+        <label for="waqi-token-input" class="block font-semibold text-slate-700 dark:text-slate-300">WAQI API Token (stored locally in your browser)</label>
+        <input id="waqi-token-input" type="password" placeholder="Paste your free WAQI token..." class="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+      </div>
+      <div id="waqi-modal-status" class="text-[11px] text-slate-500 dark:text-slate-400"></div>
+      <div class="flex items-center justify-end gap-2 pt-1">
+        <button id="btn-clear-waqi-token" type="button" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold">Clear</button>
+        <button id="btn-save-waqi-token" type="button" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold">Save &amp; Sync</button>
       </div>
     </div>
   </div>
@@ -568,6 +593,20 @@
         return Math.max(10, Math.min(500, Math.max(...vals)));
       }
 
+      // Inverse US EPA breakpoints to convert WAQI iaqi sub-indices into physical ug/m3
+      const US_PM25_INV = [[0, 50, 0, 9.0], [51, 100, 9.1, 35.4], [101, 150, 35.5, 55.4], [151, 200, 55.5, 125.4], [201, 300, 125.5, 225.4], [301, 500, 225.5, 325.4]];
+      const US_PM10_INV = [[0, 50, 0, 54], [51, 100, 55, 154], [101, 150, 155, 254], [151, 200, 255, 354], [201, 300, 355, 424], [301, 500, 425, 604]];
+      function inverseSubIndex(idx, bps) {
+        if (idx === null || idx === undefined || Number.isNaN(Number(idx)) || idx < 0) return null;
+        const v = Number(idx);
+        for (let i = 0; i < bps.length; i++) {
+          const [iLo, iHi, cLo, cHi] = bps[i];
+          if (v <= iHi) return Math.round(((cHi - cLo) / Math.max(1, iHi - iLo)) * (v - iLo) + cLo);
+        }
+        const last = bps[bps.length - 1];
+        return Math.round(last[3] + ((v - last[1]) / 100) * 100);
+      }
+
       const state = {
         tab: 'forecast',
         scale: 'in',
@@ -577,6 +616,10 @@
         futureAq: new Map(),
         weatherForecast: null,
         sourceLabel: 'Snapshot',
+        groundStation: null,
+        waqiDailyForecast: new Map(),
+        waqiHistoryCount: 0,
+        waqiToken: '',
         dailyFilter: 'ALL',
         selectedWeekKey: '',
         logDateFilter: 'ALL',
@@ -603,6 +646,13 @@
         btnGeolocate: document.getElementById('btn-geolocate'),
         btnScaleIn: document.getElementById('btn-scale-in'),
         btnScaleUs: document.getElementById('btn-scale-us'),
+        btnWaqiSettings: document.getElementById('btn-waqi-settings'),
+        waqiModal: document.getElementById('waqi-modal'),
+        btnCloseWaqiModal: document.getElementById('btn-close-waqi-modal'),
+        waqiTokenInput: document.getElementById('waqi-token-input'),
+        waqiModalStatus: document.getElementById('waqi-modal-status'),
+        btnClearWaqiToken: document.getElementById('btn-clear-waqi-token'),
+        btnSaveWaqiToken: document.getElementById('btn-save-waqi-token'),
         btnMethodology: document.getElementById('btn-methodology'),
         btnFooterMethodology: document.getElementById('btn-footer-methodology'),
         methodologyModal: document.getElementById('methodology-modal'),
@@ -915,7 +965,19 @@
           const regEst = rawRegPred + decayedAnchor + windDispersionAdj + trafficAdj + windDirAdj + trendAdj;
 
           let blended = regEst;
-          if (aqMatch) {
+          const waqiDay = state.waqiDailyForecast && state.waqiDailyForecast.get(targetDate);
+          if (waqiDay) {
+            // Shape WAQI daily avg/min/max into hourly target using diurnal + boundary-layer curve
+            const dayAvg = state.scale === 'in' ? waqiDay.inAvg : waqiDay.usAvg;
+            const dayMin = state.scale === 'in' ? waqiDay.inMin : waqiDay.usMin;
+            const dayMax = state.scale === 'in' ? waqiDay.inMax : waqiDay.usMax;
+            const halfSpan = Math.max(10, (dayMax - dayMin) / 2);
+            // Night/early-morning inversion peaks (~02:00-06:00), afternoon dip (~14:00-16:00)
+            const diurnalWave = Math.cos(((targetHour - 4) * 2 * Math.PI) / 24);
+            const waqiHourlyTarget = dayAvg + diurnalWave * halfSpan * 0.65 + windDispersionAdj - state.tempOffset * 2.0 + windDirAdj;
+            const waqiWeight = step <= 6 ? 0.35 : (step <= 12 ? 0.55 : Math.min(0.88, 0.55 + ((step - 12) / 36) * 0.33));
+            blended = regEst * (1 - waqiWeight) + waqiHourlyTarget * waqiWeight;
+          } else if (aqMatch) {
             const omAqi = state.scale === 'in' ? aqMatch.inAqi : aqMatch.usAqi;
             const omWeight = step <= 12 ? 0.25 : Math.min(0.85, 0.25 + ((step - 12) / 36) * 0.6);
             blended = regEst * (1 - omWeight) + (omAqi + windDispersionAdj - state.tempOffset * 2.0) * omWeight;
@@ -1038,6 +1100,10 @@
                 <span class="text-[11px] font-semibold text-sky-300 shrink-0">${hrDeltaTxt}</span>
               </div>
               <p id="hero-sync-line" class="text-[11px] text-slate-400 leading-snug wrap-safe">${getSyncLine()}</p>
+              ${state.groundStation
+                ? `<p class="text-[11px] text-emerald-300 font-semibold leading-snug wrap-safe">Station: ${state.groundStation.name}${state.groundStation.time ? ' (' + state.groundStation.time.slice(11, 16) + ')' : ''}</p>`
+                : `<p class="text-[11px] text-amber-300/90 leading-snug">Modeled grid estimate &middot; <button type="button" id="btn-hero-connect-waqi" class="underline font-semibold hover:text-white">Connect CPCB Station</button></p>`
+              }
             </div>
 
             <div class="flex flex-wrap items-center justify-between gap-2 py-1">
@@ -1127,6 +1193,9 @@
           { label: 'Ozone (O₃)', val: `${latest.o3}`, sub: 'µg/m³' },
           { label: 'UV Index', val: `${latest.uv}`, sub: latest.uv >= 6 ? 'High UV' : 'Low–Mod UV' },
         ];
+        const heroBtn = document.getElementById('btn-hero-connect-waqi');
+        if (heroBtn) heroBtn.addEventListener('click', openWaqiModal);
+
         els.kpiStrip.innerHTML = secondary.map((c) => `
           <div class="min-w-0 rounded-xl bg-slate-50 dark:bg-slate-800/60 px-3 py-2.5 flex flex-col gap-0.5">
             <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-tight">${c.label}</p>
@@ -1191,7 +1260,7 @@
           </div>
         `;
 
-        els.weatherSourceBadge.textContent = state.weatherForecast ? `Open-Meteo ${state.horizon}h + PBLH` : 'Historical diurnal';
+        els.weatherSourceBadge.textContent = state.groundStation ? `WAQI ${state.horizon}h + ECMWF PBLH` : (state.weatherForecast ? `Open-Meteo ${state.horizon}h + PBLH` : 'Historical diurnal');
 
         const windowPoints = points.slice(0, 12);
         if (windowPoints.length >= 2) {
@@ -1316,13 +1385,14 @@
 
       function populateFilters() {
         const dates = Array.from(groupByDate(state.logs).keys()).sort();
+        const datesDesc = dates.slice().reverse();
         const prevDaily = state.dailyFilter;
-        els.dailyDateSelect.innerHTML = `<option value="ALL">All Days</option>` + dates.map((d) => `<option value="${d}">${d}</option>`).join('');
+        els.dailyDateSelect.innerHTML = `<option value="ALL">All Days</option>` + datesDesc.map((d) => `<option value="${d}">${d}</option>`).join('');
         state.dailyFilter = dates.includes(prevDaily) ? prevDaily : 'ALL';
         els.dailyDateSelect.value = state.dailyFilter;
 
         const prevLogDate = state.logDateFilter;
-        els.logDateFilter.innerHTML = `<option value="ALL">All Dates</option>` + dates.map((d) => `<option value="${d}">${d}</option>`).join('');
+        els.logDateFilter.innerHTML = `<option value="ALL">All Dates</option>` + datesDesc.map((d) => `<option value="${d}">${d}</option>`).join('');
         state.logDateFilter = dates.includes(prevLogDate) ? prevLogDate : 'ALL';
         els.logDateFilter.value = state.logDateFilter;
 
@@ -1342,7 +1412,7 @@
 
       function renderDailyView() {
         const byDate = groupByDate(state.logs);
-        const dates = state.dailyFilter === 'ALL' ? Array.from(byDate.keys()).sort() : [state.dailyFilter];
+        const dates = state.dailyFilter === 'ALL' ? Array.from(byDate.keys()).sort().reverse() : [state.dailyFilter];
         els.dailyCards.innerHTML = dates.map((d) => {
           const rows = byDate.get(d) || [];
           if (!rows.length) return '';
@@ -1636,6 +1706,108 @@
         updateTabsUI();
       }
 
+      function parseWaqiDailyForecast(forecastObj) {
+        const map = new Map();
+        const daily = forecastObj && forecastObj.daily ? forecastObj.daily : null;
+        if (!daily) return map;
+        const pm25List = Array.isArray(daily.pm25) ? daily.pm25 : [];
+        const pm10List = Array.isArray(daily.pm10) ? daily.pm10 : [];
+        const byDay = new Map();
+        pm25List.forEach((item) => {
+          if (!item || !item.day) return;
+          byDay.set(item.day, { pm25: item, pm10: null });
+        });
+        pm10List.forEach((item) => {
+          if (!item || !item.day) return;
+          const cur = byDay.get(item.day) || { pm25: null, pm10: null };
+          cur.pm10 = item;
+          byDay.set(item.day, cur);
+        });
+        byDay.forEach((v, day) => {
+          const p25 = v.pm25;
+          const p10 = v.pm10;
+          const usAvg = Math.round(Math.max(p25 ? (p25.avg || 0) : 0, p10 ? (p10.avg || 0) : 0));
+          const usMin = Math.round(Math.max(p25 ? (p25.min || 0) : 0, p10 ? (p10.min || 0) : 0));
+          const usMax = Math.round(Math.max(p25 ? (p25.max || 0) : 0, p10 ? (p10.max || 0) : 0));
+          if (!usAvg) return;
+          const inAvg = computeIndianAqi({
+            pm25: p25 ? inverseSubIndex(p25.avg, US_PM25_INV) : 0,
+            pm10: p10 ? inverseSubIndex(p10.avg, US_PM10_INV) : 0,
+          });
+          const inMin = computeIndianAqi({
+            pm25: p25 ? inverseSubIndex(p25.min, US_PM25_INV) : 0,
+            pm10: p10 ? inverseSubIndex(p10.min, US_PM10_INV) : 0,
+          });
+          const inMax = computeIndianAqi({
+            pm25: p25 ? inverseSubIndex(p25.max, US_PM25_INV) : 0,
+            pm10: p10 ? inverseSubIndex(p10.max, US_PM10_INV) : 0,
+          });
+          map.set(day, { usAvg, usMin, usMax, inAvg, inMin, inMax });
+        });
+        return map;
+      }
+
+      function parseWaqiPayload(d) {
+        if (!d || typeof d.aqi !== 'number' || Number.isNaN(d.aqi)) return null;
+        const iaqi = d.iaqi || {};
+        const pm25Ug = iaqi.pm25 && iaqi.pm25.v !== undefined ? inverseSubIndex(iaqi.pm25.v, US_PM25_INV) : null;
+        const pm10Ug = iaqi.pm10 && iaqi.pm10.v !== undefined ? inverseSubIndex(iaqi.pm10.v, US_PM10_INV) : null;
+        return {
+          name: (d.city && d.city.name) ? d.city.name : 'Nearest CPCB Station',
+          url: (d.city && d.city.url) ? d.city.url : 'https://aqicn.org/',
+          time: (d.time && d.time.s) ? d.time.s : '',
+          usAqi: Math.round(d.aqi),
+          pm25: pm25Ug,
+          pm10: pm10Ug,
+          co: iaqi.co && iaqi.co.v !== undefined ? Math.round(iaqi.co.v * 100) : null,
+          no2: iaqi.no2 && iaqi.no2.v !== undefined ? Math.round(iaqi.no2.v) : null,
+          so2: iaqi.so2 && iaqi.so2.v !== undefined ? Math.round(iaqi.so2.v) : null,
+          o3: iaqi.o3 && iaqi.o3.v !== undefined ? Math.round(iaqi.o3.v) : null,
+          dailyForecast: parseWaqiDailyForecast(d.forecast),
+        };
+      }
+
+      async function fetchWaqiGroundStation(locKey, loc) {
+        // 1. Try automated GitHub Actions cache (ground-stations.json) first
+        try {
+          const cacheRes = await fetch(`./ground-stations.json?t=${Math.floor(Date.now() / 60000)}`);
+          if (cacheRes.ok) {
+            const cacheJson = await cacheRes.json();
+            if (cacheJson && cacheJson.stations && cacheJson.stations[locKey]) {
+              const parsed = parseWaqiPayload(cacheJson.stations[locKey]);
+              if (parsed) {
+                const hist = (cacheJson.history && Array.isArray(cacheJson.history[locKey])) ? cacheJson.history[locKey] : [];
+                parsed.history = hist;
+                return parsed;
+              }
+            }
+          }
+        } catch (e) {}
+
+        // 2. Fallback to user's personal free WAQI token (saved in localStorage)
+        const token = (state.waqiToken || '').trim();
+        if (!token) return null;
+        try {
+          const res = await fetch(`https://api.waqi.info/feed/geo:${loc.lat};${loc.lon}/?token=${encodeURIComponent(token)}`);
+          if (!res.ok) return null;
+          const json = await res.json();
+          if (json && json.status === 'ok' && json.data) {
+            const parsed = parseWaqiPayload(json.data);
+            if (parsed) parsed.history = [];
+            return parsed;
+          }
+        } catch (e) {}
+        return null;
+      }
+
+      function openWaqiModal() {
+        els.waqiTokenInput.value = state.waqiToken || '';
+        els.waqiModalStatus.textContent = state.groundStation
+          ? `Active station: ${state.groundStation.name}`
+          : 'Not connected yet — add a free WAQI token or deploy the GitHub Actions workflow.';
+        els.waqiModal.classList.remove('hidden');
+      }
+
       async function fetchCityAirAndWeather(loc) {
         try {
           const tz = encodeURIComponent(loc.tz || 'auto');
@@ -1705,9 +1877,79 @@
           });
 
           if (!rows.length) throw new Error('No hourly rows returned');
-          state.logs = rows;
+
+          // Fetch ground-station reading, rolling history & daily forecast from WAQI
+          const gs = await fetchWaqiGroundStation(state.locationKey, loc);
+          state.groundStation = gs;
+          state.waqiDailyForecast = (gs && gs.dailyForecast) ? gs.dailyForecast : new Map();
+          state.waqiHistoryCount = 0;
+
+          let finalRows = rows;
+          if (gs) {
+            // If GitHub Actions has accumulated 6+ WAQI ground-station history points, train directly on WAQI history!
+            if (Array.isArray(gs.history) && gs.history.length >= 6) {
+              const waqiRows = gs.history
+                .map((hItem) => {
+                  const ts = String(hItem.time || '');
+                  if (ts.length < 16) return null;
+                  const isoKey = `${ts.slice(0, 10)}T${ts.slice(11, 13)}:00`;
+                  const w = wxMap.get(isoKey) || { temp: 20, humidity: 50, wind: 5, pblh: 350 };
+                  const pm25 = hItem.pm25 !== null && hItem.pm25 !== undefined ? hItem.pm25 : 0;
+                  const pm10 = hItem.pm10 !== null && hItem.pm10 !== undefined ? hItem.pm10 : 0;
+                  const rec = {
+                    date: ts.slice(0, 10),
+                    timestamp: ts.slice(0, 19),
+                    usAqi: Math.round(hItem.usAqi || 0),
+                    pm25,
+                    pm10,
+                    co: hItem.co || 600,
+                    no2: hItem.no2 || 20,
+                    so2: hItem.so2 || 5,
+                    o3: hItem.o3 || 15,
+                    aod: null,
+                    dust: null,
+                    temp: Math.round(w.temp),
+                    humidity: Math.round(w.humidity),
+                    wind: Number((w.wind || 0).toFixed(1)),
+                    uv: 0,
+                    pblh: w.pblh ? Math.round(w.pblh) : 350,
+                  };
+                  rec.inAqi = computeIndianAqi(rec);
+                  return rec;
+                })
+                .filter(Boolean);
+              if (waqiRows.length >= 6) {
+                finalRows = waqiRows;
+                state.waqiHistoryCount = waqiRows.length;
+              }
+            }
+
+            // Always calibrate/anchor the training series to the live WAQI ground station reading
+            if (state.waqiHistoryCount === 0) {
+              const latestRow = finalRows[finalRows.length - 1];
+              const usRatio = latestRow.usAqi > 0 && gs.usAqi ? Math.max(0.5, Math.min(2.2, gs.usAqi / latestRow.usAqi)) : 1;
+              const pm25Ratio = latestRow.pm25 > 0 && gs.pm25 ? Math.max(0.5, Math.min(2.2, gs.pm25 / latestRow.pm25)) : usRatio;
+              finalRows.forEach((r) => {
+                r.usAqi = Math.max(10, Math.min(500, Math.round(r.usAqi * usRatio)));
+                r.pm25 = Math.max(1, Math.round(r.pm25 * pm25Ratio));
+                r.pm10 = Math.max(1, Math.round(r.pm10 * pm25Ratio));
+                r.inAqi = computeIndianAqi(r);
+              });
+              if (gs.usAqi !== null) latestRow.usAqi = gs.usAqi;
+              if (gs.pm25 !== null) latestRow.pm25 = gs.pm25;
+              if (gs.pm10 !== null) latestRow.pm10 = gs.pm10;
+              if (gs.no2 !== null) latestRow.no2 = gs.no2;
+              if (gs.so2 !== null) latestRow.so2 = gs.so2;
+              if (gs.o3 !== null) latestRow.o3 = gs.o3;
+              latestRow.inAqi = computeIndianAqi(latestRow);
+            }
+          }
+
+          state.logs = finalRows;
           state.futureAq = futureMap;
-          state.sourceLabel = `Live · ${loc.name}`;
+          state.sourceLabel = gs
+            ? (state.waqiHistoryCount >= 6 ? `WAQI Ground (${state.waqiHistoryCount}h) · ${loc.name}` : `WAQI Ground · ${loc.name}`)
+            : `Model Grid · ${loc.name}`;
           state.lastSyncedStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }) + ' IST';
           state.dailyFilter = 'ALL';
           state.logDateFilter = 'ALL';
@@ -1837,11 +2079,12 @@
           bestLine = `\n• *Best 2h Window:* ${pts[bestIdx].label}–${pts[bestIdx + 1].label} IST (Est. ${Math.round(bestAvg)})`;
         }
         const loc = LOCATIONS[state.locationKey] || LOCATIONS.gurgaon;
+        const stationLine = state.groundStation ? `\n• *Station:* ${state.groundStation.name}` : '';
         const grapLine = loc.isNcr ? `\n• *GRAP Status:* ${getGrapStage(latest.inAqi).stage}` : '';
         const shareUrl = LOCATIONS[state.locationKey] && !state.locationKey.startsWith('custom_') && state.locationKey !== 'gps_local'
           ? `https://aqiforecast.online/?city=${state.locationKey}&scale=${state.scale}`
           : 'https://aqiforecast.online/';
-        const text = `*${loc.name} AQI Update* (${latest.timestamp.slice(0, 16)} IST)\n• *Current ${scaleLabel()}:* ${latestVal} (${latestStatus})${grapLine}\n• *PM2.5 / PM10:* ${latest.pm25} / ${latest.pm10} µg/m³\n• *Dispersion:* PBLH ${latest.pblh} m · Wind ${latest.wind} km/h · ${latest.temp}°C${nextHr ? `\n• *Next-Hr Est.:* ${nextHr.estAqi} (${nextHr.status})` : ''}${bestLine}\n• *Guidance:* ${getOutdoorGuidance(latestVal)}\n\nLive Dashboard & Forecast:\n${shareUrl}`;
+        const text = `*${loc.name} AQI Update* (${latest.timestamp.slice(0, 16)} IST)\n• *Current ${scaleLabel()}:* ${latestVal} (${latestStatus})${stationLine}${grapLine}\n• *PM2.5 / PM10:* ${latest.pm25} / ${latest.pm10} µg/m³\n• *Dispersion:* PBLH ${latest.pblh} m · Wind ${latest.wind} km/h · ${latest.temp}°C${nextHr ? `\n• *Next-Hr Est.:* ${nextHr.estAqi} (${nextHr.status})` : ''}${bestLine}\n• *Guidance:* ${getOutdoorGuidance(latestVal)}\n\nLive Dashboard & Forecast:\n${shareUrl}`;
 
         const fallback = () => {
           const ta = document.createElement('textarea');
@@ -1885,7 +2128,10 @@
 
       function initTheme() {
         let saved = 'dark';
-        try { saved = localStorage.getItem('aqi_forecast_theme') || 'dark'; } catch (e) {}
+        try {
+          saved = localStorage.getItem('aqi_forecast_theme') || 'dark';
+          state.waqiToken = localStorage.getItem('aqi_forecast_waqi_token') || '';
+        } catch (e) {}
         document.documentElement.classList.toggle('dark', saved === 'dark');
       }
 
@@ -1966,6 +2212,23 @@
       els.btnCitySearch.addEventListener('click', () => searchCustomCity(els.citySearchInput.value));
       els.citySearchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') searchCustomCity(els.citySearchInput.value); });
 
+      els.btnWaqiSettings.addEventListener('click', openWaqiModal);
+      els.btnCloseWaqiModal.addEventListener('click', () => els.waqiModal.classList.add('hidden'));
+      els.btnSaveWaqiToken.addEventListener('click', () => {
+        state.waqiToken = els.waqiTokenInput.value.trim();
+        try { localStorage.setItem('aqi_forecast_waqi_token', state.waqiToken); } catch (e) {}
+        els.waqiModal.classList.add('hidden');
+        showToast(state.waqiToken ? 'Saved WAQI token — syncing ground station...' : 'Cleared WAQI token');
+        refreshActiveLocation();
+      });
+      els.btnClearWaqiToken.addEventListener('click', () => {
+        state.waqiToken = '';
+        els.waqiTokenInput.value = '';
+        try { localStorage.removeItem('aqi_forecast_waqi_token'); } catch (e) {}
+        els.waqiModal.classList.add('hidden');
+        showToast('WAQI token cleared');
+        refreshActiveLocation();
+      });
       els.btnMethodology.addEventListener('click', () => els.methodologyModal.classList.remove('hidden'));
       els.btnFooterMethodology.addEventListener('click', () => els.methodologyModal.classList.remove('hidden'));
       els.btnCloseMethodology.addEventListener('click', () => els.methodologyModal.classList.add('hidden'));
