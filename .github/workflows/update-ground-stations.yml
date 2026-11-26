@@ -2,11 +2,15 @@ name: Update Ground Station AQI & Forecast (WAQI / CPCB)
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '7,37 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: update-ground-stations
+  cancel-in-progress: false
 
 jobs:
   update-stations:
@@ -15,12 +19,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Fetch live CPCB ground stations, history & WAQI forecasts
+      - name: Fetch freshest active CPCB stations within 20km (WAQI)
         env:
           WAQI_TOKEN: ${{ secrets.WAQI_TOKEN }}
         run: |
           python3 - << 'EOF'
-          import json, os, urllib.request
+          import json, math, os, urllib.request
           from datetime import datetime, timezone
 
           token = os.environ.get('WAQI_TOKEN', '').strip()
@@ -39,6 +43,76 @@ jobs:
                       return round(((c_hi - c_lo) / max(1, i_hi - i_lo)) * (v - i_lo) + c_lo)
               last = bps[-1]
               return round(last[3] + ((v - last[1]) / 100.0) * 100.0)
+
+          def haversine_km(lat1, lon1, lat2, lon2):
+              r = 6371.0
+              dlat = math.radians(lat2 - lat1)
+              dlon = math.radians(lon2 - lon1)
+              a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+              return 2 * r * math.asin(min(1.0, math.sqrt(a)))
+
+          def fetch_json(url):
+              with urllib.request.urlopen(url, timeout=15) as resp:
+                  return json.loads(resp.read().decode('utf-8'))
+
+          def age_minutes(time_str):
+              if not time_str:
+                  return 99999
+              try:
+                  ts = time_str.replace('Z', '+00:00')
+                  dt = datetime.fromisoformat(ts)
+                  if dt.tzinfo is None:
+                      dt = dt.replace(tzinfo=timezone.utc)
+                  return max(0.0, (datetime.now(timezone.utc) - dt.astimezone(timezone.utc)).total_seconds() / 60.0)
+              except Exception:
+                  return 99999
+
+          def fetch_freshest_station(lat, lon):
+              # Search all stations within ~20 km bounding box
+              d_lat = 0.18
+              d_lon = 0.20
+              bounds_url = f'https://api.waqi.info/map/bounds/?latlng={lat - d_lat:.4f},{lon - d_lon:.4f},{lat + d_lat:.4f},{lon + d_lon:.4f}&token={token}'
+              candidates = []
+              try:
+                  b_payload = fetch_json(bounds_url)
+                  if b_payload.get('status') == 'ok' and isinstance(b_payload.get('data'), list):
+                      for st in b_payload['data']:
+                          aqi_raw = st.get('aqi')
+                          if aqi_raw in (None, '-', ''):
+                              continue
+                          try:
+                              float(aqi_raw)
+                          except Exception:
+                              continue
+                          s_lat, s_lon = st.get('lat'), st.get('lon')
+                          uid = st.get('uid')
+                          if s_lat is None or s_lon is None or uid is None:
+                              continue
+                          dist = haversine_km(lat, lon, float(s_lat), float(s_lon))
+                          if dist <= 20.0:
+                              st_time = (st.get('station') or {}).get('time') or ''
+                              age = age_minutes(st_time)
+                              # Prefer stations updated within the last 150 min (2.5h), then shortest distance
+                              is_stale = 1 if age > 150 else 0
+                              candidates.append((is_stale, dist, age, uid))
+              except Exception:
+                  pass
+
+              candidates.sort(key=lambda x: (x[0], x[1], x[2]))
+              # Try top 3 freshest/closest candidates for full feed
+              for _, _, _, uid in candidates[:3]:
+                  try:
+                      feed = fetch_json(f'https://api.waqi.info/feed/@{uid}/?token={token}')
+                      if feed.get('status') == 'ok' and feed.get('data') and isinstance(feed['data'].get('aqi'), (int, float)):
+                          return feed['data']
+                  except Exception:
+                      continue
+
+              # Fallback to direct geo lookup
+              feed = fetch_json(f'https://api.waqi.info/feed/geo:{lat};{lon}/?token={token}')
+              if feed.get('status') == 'ok' and feed.get('data'):
+                  return feed['data']
+              return None
 
           history = {}
           if os.path.exists('ground-stations.json'):
@@ -80,12 +154,9 @@ jobs:
 
           stations = {}
           for key, (lat, lon) in cities.items():
-              url = f'https://api.waqi.info/feed/geo:{lat};{lon}/?token={token}'
               try:
-                  with urllib.request.urlopen(url, timeout=15) as resp:
-                      payload = json.loads(resp.read().decode('utf-8'))
-                  if payload.get('status') == 'ok' and payload.get('data'):
-                      d = payload['data']
+                  d = fetch_freshest_station(lat, lon)
+                  if d and isinstance(d.get('aqi'), (int, float)):
                       iaqi = d.get('iaqi') or {}
                       stations[key] = {
                           'aqi': d.get('aqi'),
@@ -96,7 +167,7 @@ jobs:
                           'forecast': d.get('forecast'),
                       }
                       ts = (d.get('time') or {}).get('s') or ''
-                      if ts and isinstance(d.get('aqi'), (int, float)):
+                      if ts:
                           city_hist = history.get(key, [])
                           if not city_hist or city_hist[-1].get('time') != ts:
                               city_hist.append({
@@ -120,14 +191,14 @@ jobs:
           }
           with open('ground-stations.json', 'w', encoding='utf-8') as f:
               json.dump(out, f, indent=2)
-          print(f'Saved {len(stations)} WAQI stations + rolling history to ground-stations.json')
+          print(f'Saved {len(stations)} freshest WAQI stations + rolling history to ground-stations.json')
           EOF
 
       - name: Commit updated ground-stations.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
           git add ground-stations.json
           git diff --staged --quiet || git commit -m "chore: update WAQI ground-station AQI & forecast snapshot"
           git push
-
